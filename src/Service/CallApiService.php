@@ -43,5 +43,39 @@ class CallApiService
         return $response->toArray();
     }
 
-    
+    public function getAllJap(): array
+    {
+        return $this->getApiJap('-npatients.json');
+    }
+
+    public function getAllDeathJap(): array
+    {
+        return $this->getApiJap('-ndeaths.json');
+    }
+
+    public function getAllHospJap(): array
+    {
+        return $this->getApiJap('-ncures.json');
+    }
+   
+
+    private function getApiJap($var): array
+    {
+        $response = $this->client->request(
+            'GET',
+            "https://data.corona.go.jp/converted-json/covid19japan" . $var 
+        );
+        $data = $response->toArray();
+        arsort($data);
+        return  $data;
+    }
+
+    public function getApiJapDeath($date): array
+    {
+        $response = $this->client->request(
+            'GET',
+            "https://opendata.corona.go.jp/api/Covid19JapanNdeaths?date=" . $date
+        );
+        return $response->toArray();
+    }
 }

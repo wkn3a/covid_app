@@ -20,10 +20,9 @@ class DepartmentController extends AbstractController
         $label = [];
         $hospitalisation = [];
         $rea = [];
- 
         for ($i=1; $i < 8; $i++) { 
             $date = New DateTime('- '. $i .' day');
-            $datas = $callApiService->getAllDataByDate($date->format('Y-m-d'));
+            $datas = $callApiService->getAllDataByDate($date->format('d-m-Y'));
             foreach ($datas as $data) {
                 if( $data['lib_dep'] === $department) {
                     $label[] = $data['date'];
