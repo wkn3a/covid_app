@@ -4,9 +4,12 @@ namespace App\Controller;
 
 use App\Service\CallApiService;
 use DateTime;
+use PhpParser\Node\Stmt\Label;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 
@@ -15,23 +18,25 @@ class DepartmentController extends AbstractController
     /**
      * @Route("/department/{department}", name="app_department")
      */
-    public function index(string $department, CallApiService $callApiService, ChartBuilderInterface $chartBuilder): Response
+    public function index(string $department, CallApiService $callApiService, ChartBuilderInterface $chartBuilder, CacheInterface $cache): Response
     {
+        $data_chart = $cache->get('result_department_detail_7j_' . $department, function(ItemInterface $item) use($callApiService, $department){
+            $item->expiresAt(new \DateTime('tomorrow'));
+            $datas = $callApiService->getDepartmentData($department);
+            $datas = array_reverse($datas);
+            $datas = array_slice($datas, 0, 7);
+            return $datas;
+        });
+
         $label = [];
         $hospitalisation = [];
         $rea = [];
-        for ($i=1; $i < 8; $i++) { 
-            $date = New DateTime('- '. $i .' day');
-            $datas = $callApiService->getAllDataByDate($date->format('d-m-Y'));
-            foreach ($datas as $data) {
-                if( $data['lib_dep'] === $department) {
-                    $label[] = $data['date'];
-                    $hospitalisation[] = $data['incid_hosp'];
-                    $rea[] = $data['incid_rea'];
-                    break;
-                }
-            }
-        }
+
+        foreach ($data_chart as $data) {
+            $label[] = $data['date'];
+            $hospitalisation[] = $data['incid_hosp'];
+            $rea[] = $data['incid_rea'];
+        }; 
 
         $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
         $chart->setData([
@@ -51,9 +56,13 @@ class DepartmentController extends AbstractController
         ]);
 
         $chart->setOptions([/* ... */]);
- 
+
+        $data = $cache->get('result_department_france_'. $department, function(ItemInterface $item) use($callApiService, $department){
+            $item->expiresAt(new \DateTime('tomorrow'));
+            return  $callApiService->getDepartmentDataLive($department);
+        }); 
         return $this->render('department/index.html.twig', [
-            'data' => $callApiService->getDepartmentData($department),
+            'data' => $data,
             'chart' => $chart,
         ]);
     }

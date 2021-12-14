@@ -24,9 +24,14 @@ class CallApiService
         return $this->getApi('live/departements');
     }
 
-    public function getDepartmentData($department): array
+    public function getDepartmentDataLive($department): array
     {
         return $this->getApi('live/departement/' . $department);
+    }
+
+    public function getDepartmentData($department): array
+    {
+        return $this->getApi('departement/' . $department);
     }
 
     public function getAllDataByDate($date): array
