@@ -17,12 +17,11 @@
             {{ render_chart(chart) }}
         </div>
     </div>
-    
     <div class="row text-center">
         <div class="col">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header">
-                    <h4 class="my-0 fw-normal">Nombre d’hospitalisations</h4>
+                    <h4 class="my-0 fw-normal">Nombre de personnes actuellement hospitalisés</h4>
                 </div>
                 <div class="card-body">
                     <h1 class="card-title pricing-card-title">{{ data.0.hosp }}<span class="fs-6 text-secondary">+ {{ data.0.incid_hosp }} en 24h</span></h1>
@@ -32,7 +31,7 @@
         <div class="col">
             <div class="card mb-4 shadow-sm">
                 <div class="card-header">
-                    <h4 class="my-0 fw-normal">Nombre de personnes réa</h4>
+                    <h4 class="my-0 fw-normal">Nombre de personnes actuellement réa</h4>
                 </div>
                 <div class="card-body">
                     <h1 class="card-title pricing-card-title">{{ data.0.rea }}<span class="fs-6 text-secondary">+ {{ data.0.incid_rea }} en 24h</span></h1>
