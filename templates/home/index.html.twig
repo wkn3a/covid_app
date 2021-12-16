@@ -22,7 +22,13 @@
                             <h5 class="card-title">Nombre de cas confirmés 😷</h5>
                             <p class="card-text">Nombre de cas confirmés depuis le début de la pandémie</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-info mx-2 rounded-3">{{ data.0.conf ?? message }} <span class="fs-6 text-secondary">+ {{ data.0.conf_j1 ?? message }} en 24h</span></h3>
+                        <h3 class="fw-bold card-footer text-info mx-2 rounded-3">
+                        {% if data is not null %}
+                            {{ data.0.conf|number_format }}<span class="fs-6 text-secondary">+ {{ data.0.conf_j1 }} en 24h</span>
+                        {% else %}
+                            {{ message }}
+                        {% endif %}
+                        </h3>
                     </div>
                 </div>
  
@@ -32,7 +38,13 @@
                             <h5 class="card-title">Nombre d’hospitalisations 😵</h5>
                             <p class="card-text">Nombre de personnes actuellement hospitalisée</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">{{ data.0.hosp ?? message}} <span class="fs-6 text-secondary">+ {{ data.0.incid_hosp ?? message }} en 24h</span></h3>
+                        <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">
+                        {% if data is not null %}
+                            {{ data.0.hosp|number_format }}<span class="fs-6 text-secondary">+ {{ data.0.incid_hosp }} en 24h</span>
+                        {% else %}
+                            {{ message }}
+                        {% endif %}
+                        </h3>
                     </div>
                 </div>
  
@@ -42,7 +54,13 @@
                             <h5 class="card-title">Nombre de Réa 😖</h5>
                             <p class="card-text">Nombre de personnes actuellement en réanimation</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-danger mx-2 rounded-3">{{ data.0.rea ?? message }} <span class="fs-6 text-secondary">+ {{ data.0.incid_rea ?? message }} en 24h</span></h3>
+                        <h3 class="fw-bold card-footer text-danger mx-2 rounded-3">
+                        {% if data is not null %}
+                            {{ data.0.rea|number_format }}<span class="fs-6 text-secondary">+ {{ data.0.incid_rea }} en 24h</span>
+                        {% else %}
+                            {{ message }}
+                        {% endif %}
+                        </h3>
                     </div>
                 </div>
  
@@ -52,7 +70,13 @@
                             <h5 class="card-title">Nombre total de décès 😿</h5>
                             <p class="card-text">Nombre de personnes décédés depuis le début de la pandémie</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">{{ data.0.dc_tot ?? message }} <span class="fs-6 text-secondary">+ {{ france_diff.death ?? message }} en 24h</span></h3>
+                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">
+                        {% if data is not null %}
+                            {{ data.0.dc_tot|number_format }}<span class="fs-6 text-secondary">+ {{ france_diff.death }} en 24h</span>
+                        {% else %}
+                            {{ message }}
+                        {% endif %}
+                        </h3>
                     </div>
                 </div>
 
@@ -67,7 +91,13 @@
                             </h5>
                             <p class="card-text">Tension hospitalière sur la capacité en réanimation</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">{{ data.0.TO ?? message }}%</h3>
+                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">
+                        {% if data is not null %}
+                            {{ data.0.TO }} %
+                        {% else %}
+                            {{ message }}
+                        {% endif %}
+                        </h3>
                     </div>
                 </div>
  
@@ -83,7 +113,12 @@
                 <p class="lead">Source : <a class="text-success" href="https://corona.go.jp/dashboard/">corona.go.jp</a>
                     </p>
                 <p class="lead">Date d'actualisation : 
-                    {{ dataJap.date ?? message }}</p>
+                    {% if dataJap is not null %}
+                        {{ dataJap.date }}
+                    {% else %}
+                        {{ message }}
+                    {% endif %}
+                </p>
             </div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
 
@@ -93,7 +128,13 @@
                             <h5 class="card-title">Nombre d’hospitalisations 😵</h5>
                             <p class="card-text">Nombre de personnes actuellement hospitalisée</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">{{ dataJapHosp.ncures ?? message }}</h3>
+                        <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">
+                        {% if dataJapHosp is not null %}
+                            {{ dataJapHosp.ncures|number_format }}
+                        {% else %}
+                            {{ message }}
+                        {% endif %}
+                        </h3>
                     </div>
                 </div>
  
@@ -103,7 +144,13 @@
                             <h5 class="card-title">Nombre total de décès 😿</h5>
                             <p class="card-text">Nombre de personnes décédés depuis le début de la pandémie</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">{{ dataJapDeath.ndeaths ?? message }}</h3>
+                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">
+                        {% if dataJapDeath is not null %}
+                            {{ dataJapDeath.ndeaths|number_format }}
+                        {% else %}
+                            {{ message }}
+                        {% endif %}
+                        </h3>
                     </div>
                 </div>
  
@@ -113,7 +160,13 @@
                             <h5 class="card-title">Nombre de cas confirmés 😷</h5>
                             <p class="card-text">Nombre de cas confirmés depuis le début de la pandémie</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-info mx-2 rounded-3">{{ dataJap.npatients ?? message }} <span class="fs-6 text-secondary">+ {{ dataJap.adpatients ?? '' }} en 24h</span></h3>
+                        <h3 class="fw-bold card-footer text-info mx-2 rounded-3">
+                        {% if dataJap is not null %}
+                            {{ dataJap.npatients|number_format }}<span class="fs-6 text-secondary">+ {{ dataJap.adpatients }} en 24h</span>
+                        {% else %}
+                            {{ message }}
+                        {% endif %}
+                        </h3>
                     </div>
                 </div>
  
@@ -121,25 +174,31 @@
         </div>
     </div>
 
+    {% if departments is not null %}
+        <div class="album py-5">
+            <div class="container">
+                <h1 class="mb-5">Les chiffres du COVID-19 par département</h1>
+                <div class="card mb-5 mt-5">
+                    <div class="card-body">
+                        {{ render_chart(chart) }}
+                    </div>
+                </div>
 
-      <div class="album py-5">
-        <div class="container">
-            <h1 class="mb-5">Les chiffres du COVID-19 par département</h1>
- 
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                {% for department in departments %}
-                    <div class="col">
-                        <div class="card h-100 m-2">
-                            <div class="card-body">
-                                <h5 class="card-title fw-bold">{{ department.lib_dep }}</h5>
-                                <p class="card-text">Actuellement hospitalisée <span class="badge badge-hos">{{ department.hosp }}</span></p>
-                                <p class="card-text">Actuellement en réa <span class="badge badge-rea">{{ department.rea }}</span></p>
-                                <a href="{{ path('app_department',{'department': department.lib_dep } ) }}" class="btn button text-info" role="button" aria-pressed="true">Plus de chiffres</a>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                    {% for department in departments %}
+                        <div class="col">
+                            <div class="card h-100 m-2">
+                                <div class="card-body">
+                                    <h5 class="card-title fw-bold">{{ department.lib_dep }}</h5>
+                                    <p class="card-text">Actuellement hospitalisée <span class="badge badge-hos">{{ department.hosp }}</span></p>
+                                    <p class="card-text">Actuellement en réa <span class="badge badge-rea">{{ department.rea }}</span></p>
+                                    <a href="{{ path('app_department',{'department': department.lib_dep } ) }}" class="btn button text-info" role="button" aria-pressed="true">Plus de chiffres</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}

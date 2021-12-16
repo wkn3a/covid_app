@@ -24,10 +24,10 @@ class DepartmentController extends AbstractController
             $item->expiresAt(new \DateTime('tomorrow'));
             $datas = $callApiService->getDepartmentData($department);
             $datas = array_reverse($datas);
-            $datas = array_slice($datas, 0, 7);
+            $datas = array_slice($datas, 0, 31);
             return $datas;
         });
-
+        
         $label = [];
         $hospitalisation = [];
         $rea = [];
