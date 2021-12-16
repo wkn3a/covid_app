@@ -21,11 +21,26 @@ class HomeController extends AbstractController
         $japan = $cache->get('result_japan', function(ItemInterface $item) use($callApiService){
             $item->expiresAt(new \DateTime('tomorrow'));
             $japan = [];
-            $japan['all_death'] = $callApiService->getAllDeathJap();
-            $japan['all'] = $callApiService->getAllJap();
-            $japan['all_hosp'] = $callApiService->getAllHospJap();
+            if(!is_null($callApiService->getAllDeathJap())) {
+                $japan['all_death'] = current($callApiService->getAllDeathJap());
+            } else {
+                $japan['all_death'] = $callApiService->getAllDeathJap();
+            }
+            if(!is_null($callApiService->getAllJap())) {
+                $japan['all'] = current($callApiService->getAllJap());
+            } else {
+                $japan['all'] = $callApiService->getAllDeathJap();
+            }
+
+            if(!is_null($callApiService->getAllJap())) {
+                $japan['all_hosp'] = current($callApiService->getAllHospJap());
+            } else {
+                $japan['all_hosp'] = $callApiService->getAllHospJap();
+            }
+            
             return $japan;
         });
+        $message = 'Nous n\'avons pas accédé à la source.';
 
         $france = $cache->get('result_france', function(ItemInterface $item) use($callApiService){
             $item->expiresAt(new \DateTime('tomorrow'));
@@ -36,17 +51,21 @@ class HomeController extends AbstractController
             $france['data_day_before'] = $callApiService->getFranceDataByDate($day_befor->format("d-m-Y"));
             return $france;
         });
+
         $france_diff = [];
-        $france_diff['death'] = $france['data'][0]['dc_tot'] - $france['data_day_before'][0]['dc_tot'];
-        $france['data'][0]['TO'] = ceil($france['data'][0]['TO'] * 100);
+        if(!is_null($france['data']) && $france['data_day_before']) {
+            $france_diff['death'] = $france['data'][0]['dc_tot'] - $france['data_day_before'][0]['dc_tot'];
+            $france['data'][0]['TO'] = ceil($france['data'][0]['TO'] * 100);
+        }
         
         return $this->render('home/index.html.twig', [
             'data' => $france['data'],
             'france_diff' => $france_diff,
             'departments' => $france['departments'],
-            'dataJap' => current($japan['all']),
-            'dataJapDeath' => current($japan['all_death']),
-            'dataJapHosp' => current($japan['all_hosp'])
+            'dataJap' => $japan['all'],
+            'dataJapDeath' => $japan['all_death'],
+            'dataJapHosp' => $japan['all_hosp'],
+            'message' => $message
         ]);
     }
 }

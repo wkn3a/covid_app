@@ -12,47 +12,47 @@
                 <p class="lead">Source : <a class="text-success" href="https://www.data.gouv.fr/fr/pages/donnees-coronavirus/">data.gouv.fr</a>
                     </p>
                 <p class="lead">Date d'actualisation :
-                    {{ data.0.date }}</p>
+                    {{ data.0.date ?? message }}</p>
             </div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
 
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Nombre de cas confirmés</h5>
+                            <h5 class="card-title">Nombre de cas confirmés 😷</h5>
                             <p class="card-text">Nombre de cas confirmés depuis le début de la pandémie</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-info mx-2 rounded-3">{{ data.0.conf }} <span class="fs-6 text-secondary">+ {{ data.0.conf_j1 }} en 24h</span></h3>
+                        <h3 class="fw-bold card-footer text-info mx-2 rounded-3">{{ data.0.conf ?? message }} <span class="fs-6 text-secondary">+ {{ data.0.conf_j1 ?? message }} en 24h</span></h3>
                     </div>
                 </div>
  
                 <div class="col">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h5 class="card-title">Nombre d’hospitalisations</h5>
+                            <h5 class="card-title">Nombre d’hospitalisations 😵</h5>
                             <p class="card-text">Nombre de personnes actuellement hospitalisée</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">{{ data.0.hosp }} <span class="fs-6 text-secondary">+ {{ data.0.incid_hosp }} en 24h</span></h3>
+                        <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">{{ data.0.hosp ?? message}} <span class="fs-6 text-secondary">+ {{ data.0.incid_hosp ?? message }} en 24h</span></h3>
                     </div>
                 </div>
  
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Nombre de Réa</h5>
+                            <h5 class="card-title">Nombre de Réa 😖</h5>
                             <p class="card-text">Nombre de personnes actuellement en réanimation</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-danger mx-2 rounded-3">{{ data.0.rea }} <span class="fs-6 text-secondary">+ {{ data.0.incid_rea }} en 24h</span></h3>
+                        <h3 class="fw-bold card-footer text-danger mx-2 rounded-3">{{ data.0.rea ?? message }} <span class="fs-6 text-secondary">+ {{ data.0.incid_rea ?? message }} en 24h</span></h3>
                     </div>
                 </div>
  
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Nombre total de décès 😥</h5>
+                            <h5 class="card-title">Nombre total de décès 😿</h5>
                             <p class="card-text">Nombre de personnes décédés depuis le début de la pandémie</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">{{ data.0.dc_tot }} <span class="fs-6 text-secondary">+ {{ france_diff.death }} en 24h</span></h3>
+                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">{{ data.0.dc_tot ?? message }} <span class="fs-6 text-secondary">+ {{ france_diff.death ?? message }} en 24h</span></h3>
                     </div>
                 </div>
 
@@ -65,9 +65,9 @@
                                 <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                                 </svg>
                             </h5>
-                            <p class="card-text">Nombre de personnes actuellement en réanimation</p>
+                            <p class="card-text">Tension hospitalière sur la capacité en réanimation</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">{{ data.0.TO }}%</h3>
+                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">{{ data.0.TO ?? message }}%</h3>
                     </div>
                 </div>
  
@@ -82,38 +82,38 @@
             <div class="pt-md-2 pb-md-4 mx-auto text-center">
                 <p class="lead">Source : <a class="text-success" href="https://corona.go.jp/dashboard/">corona.go.jp</a>
                     </p>
-                <p class="lead">Date d'actualisation :
-                    {{ dataJap.date }}</p>
+                <p class="lead">Date d'actualisation : 
+                    {{ dataJap.date ?? message }}</p>
             </div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
 
                 <div class="col">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h5 class="card-title">Nombre d’hospitalisations</h5>
+                            <h5 class="card-title">Nombre d’hospitalisations 😵</h5>
                             <p class="card-text">Nombre de personnes actuellement hospitalisée</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">{{ dataJapHosp.ncures }}</h3>
+                        <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">{{ dataJapHosp.ncures ?? message }}</h3>
                     </div>
                 </div>
  
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Nombre total de décès 😥</h5>
+                            <h5 class="card-title">Nombre total de décès 😿</h5>
                             <p class="card-text">Nombre de personnes décédés depuis le début de la pandémie</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">{{ dataJapDeath.ndeaths }}</h3>
+                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">{{ dataJapDeath.ndeaths ?? message }}</h3>
                     </div>
                 </div>
  
                 <div class="col">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Nombre de cas confirmés</h5>
+                            <h5 class="card-title">Nombre de cas confirmés 😷</h5>
                             <p class="card-text">Nombre de cas confirmés depuis le début de la pandémie</p>
                         </div>
-                        <h3 class="fw-bold card-footer text-info mx-2 rounded-3">{{ dataJap.npatients }} <span class="fs-6 text-secondary">+ {{ dataJap.adpatients }} en 24h</span></h3>
+                        <h3 class="fw-bold card-footer text-info mx-2 rounded-3">{{ dataJap.npatients ?? message }} <span class="fs-6 text-secondary">+ {{ dataJap.adpatients ?? '' }} en 24h</span></h3>
                     </div>
                 </div>
  
