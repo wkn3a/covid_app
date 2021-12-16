@@ -32,11 +32,17 @@ class HomeController extends AbstractController
             $france = [];
             $france['data'] = $callApiService->getFrancedata();
             $france['departments'] = $callApiService->getAllDepartmentData();
+            $day_befor = new \DateTime('-2 day now');
+            $france['data_day_before'] = $callApiService->getFranceDataByDate($day_befor->format("d-m-Y"));
             return $france;
         });
-
+        $france_diff = [];
+        $france_diff['death'] = $france['data'][0]['dc_tot'] - $france['data_day_before'][0]['dc_tot'];
+        $france['data'][0]['TO'] = ceil($france['data'][0]['TO'] * 100);
+        
         return $this->render('home/index.html.twig', [
             'data' => $france['data'],
+            'france_diff' => $france_diff,
             'departments' => $france['departments'],
             'dataJap' => current($japan['all']),
             'dataJapDeath' => current($japan['all_death']),

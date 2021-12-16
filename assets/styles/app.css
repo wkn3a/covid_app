@@ -1,0 +1,55 @@
+body {
+    background-color: #e0e0e0;
+    font-weight: 300;
+}
+
+a {
+    text-decoration: unset;
+}
+
+.card-footer{
+    border: unset;
+    border-radius: 32px;
+    background: #e0e0e0;
+    box-shadow: inset 5px 5px 10px #bebebe,
+            inset -5px -5px 10px #ffffff;
+}
+
+.card-header {
+    border-bottom: 1px solid whitesmoke;
+}
+
+.card {
+    border: unset;
+    border-radius: 7px;
+    background: #e0e0e0;
+    box-shadow:  5px 5px 10px #b8b8b8,
+             -5px -5px 10px #ffffff;
+}
+.button {
+    border-radius: 7px;
+    background: #e0e0e0;
+    box-shadow:  5px 5px 10px #b5b5b5,
+                -5px -5px 10px #ffffff;
+}
+
+.button:hover {
+    border-radius: 7px;
+    background: #e0e0e0;
+    box-shadow: inset 5px 5px 4px #a1a1a1,
+                inset -5px -5px 4px #ffffff;
+}
+
+.badge-hos {
+    border-radius: 7px;
+background: #e0d313;
+box-shadow: inset 5px 5px 10px #d0c412,
+            inset -5px -5px 10px #f0e214;
+}
+
+.badge-rea {
+    border-radius: 7px;
+background: #e05613;
+box-shadow: inset 5px 5px 10px #b04613,
+            inset -5px -5px 10px #bc6236;
+}

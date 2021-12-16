@@ -38,6 +38,11 @@ class CallApiService
     {
         return $this->getApi('departements-by-date/' . $date);
     }
+
+    public function getFranceDataByDate($date): array
+    {
+        return $this->getApi('france-by-date/' . $date);
+    }
     
     private function getApi(string $var): array
     {

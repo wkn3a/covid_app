@@ -4,109 +4,116 @@
 {% endblock %}
  
 {% block body %}
+    
     <div class="album py-5" id="department">
         <div class="container">
-            <h1 class="mb-5">Les chiffres du COVID-19 en France</h1>
- 
+            <h1 class="fw-bold">Les chiffres du COVID-19 en France</h1>
+            <div class="pt-md-2 pb-md-4 mx-auto text-center">
+                <p class="lead">Source : <a class="text-success" href="https://www.data.gouv.fr/fr/pages/donnees-coronavirus/">data.gouv.fr</a>
+                    </p>
+                <p class="lead">Date d'actualisation :
+                    {{ data.0.date }}</p>
+            </div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
- 
+
                 <div class="col">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">Nombre d’hospitalisations</h5>
-                            <p class="card-text">Nombre de personnes actuellement hospitalisée</p>
-                        </div>
-                        <h3 class="card-footer bg-warning text-dark mx-2 rounded-pill">{{ data.0.hosp }}</h3>
-                    </div>
-                </div>
- 
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Nombre de Réa</h5>
-                            <p class="card-text">Nombre de personnes actuellement en réanimation</p>
-                        </div>
-                        <h3 class="card-footer bg-danger text-dark mx-2 rounded-pill">{{ data.0.rea }}</h3>
-                    </div>
-                </div>
- 
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Nombre total de décès 😥</h5>
-                            <p class="card-text">Nombre de personnes décédés depuis le début de la pandémie</p>
-                        </div>
-                        <h3 class="card-footer bg-dark text-light mx-2 rounded-pill">{{ data.0.dc_tot }}</h3>
-                    </div>
-                </div>
- 
-                <div class="col">
-                    <div class="card shadow-sm">
+                    <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Nombre de cas confirmés</h5>
                             <p class="card-text">Nombre de cas confirmés depuis le début de la pandémie</p>
                         </div>
-                        <h3 class="card-footer bg-info text-dark mx-2 rounded-pill">{{ data.0.conf }}</h3>
+                        <h3 class="fw-bold card-footer text-info mx-2 rounded-3">{{ data.0.conf }} <span class="fs-6 text-secondary">+ {{ data.0.conf_j1 }} en 24h</span></h3>
                     </div>
                 </div>
  
                 <div class="col">
-                    <div class="card shadow-sm">
+                    <div class="card h-100">
                         <div class="card-body">
-                            <h5 class="card-title">Source des données</h5>
-                            <p class="card-text">Source des données :<br><a href="https://www.data.gouv.fr/fr/pages/donnees-coronavirus/">data.gouv.fr</a></p>
+                            <h5 class="card-title">Nombre d’hospitalisations</h5>
+                            <p class="card-text">Nombre de personnes actuellement hospitalisée</p>
                         </div>
-                        <h3 class="card-footer bg-secondary text-grey mx-2 rounded-pill">{{ data.0.date }}</h3>
+                        <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">{{ data.0.hosp }} <span class="fs-6 text-secondary">+ {{ data.0.incid_hosp }} en 24h</span></h3>
                     </div>
                 </div>
  
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Nombre de Réa</h5>
+                            <p class="card-text">Nombre de personnes actuellement en réanimation</p>
+                        </div>
+                        <h3 class="fw-bold card-footer text-danger mx-2 rounded-3">{{ data.0.rea }} <span class="fs-6 text-secondary">+ {{ data.0.incid_rea }} en 24h</span></h3>
+                    </div>
+                </div>
+ 
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Nombre total de décès 😥</h5>
+                            <p class="card-text">Nombre de personnes décédés depuis le début de la pandémie</p>
+                        </div>
+                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">{{ data.0.dc_tot }} <span class="fs-6 text-secondary">+ {{ france_diff.death }} en 24h</span></h3>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Taux d'occupation
+                                <svg xmlns="http://www.w3.org/2000/svg" data-bs-toggle="popover" title=" Taux d'occupation : " data-bs-content="tension hospitalière sur la capacité en réanimation (Proportion de patients atteints de COVID-19 actuellement en réanimation, en soins intensifs, ou en unité de surveillance continue rapportée au total des lits en capacité initiale, c’est-à-dire avant d’augmenter les capacités de lits de réanimation dans un hôpital" width="16" height="16" fill="currentColor" class="bi bi-info-circle button" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                </svg>
+                            </h5>
+                            <p class="card-text">Nombre de personnes actuellement en réanimation</p>
+                        </div>
+                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">{{ data.0.TO }}%</h3>
+                    </div>
+                </div>
+ 
+                
             </div>
         </div>
     </div>
 
     <div class="album py-5" id="japon">
         <div class="container">
-            <h1 class="mb-5">Les chiffres du COVID-19 au Japon</h1>
- 
+            <h1 class="fw-bold">Les chiffres du COVID-19 au Japon</h1>
+            <div class="pt-md-2 pb-md-4 mx-auto text-center">
+                <p class="lead">Source : <a class="text-success" href="https://corona.go.jp/dashboard/">corona.go.jp</a>
+                    </p>
+                <p class="lead">Date d'actualisation :
+                    {{ dataJap.date }}</p>
+            </div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
 
                 <div class="col">
-                    <div class="card shadow-sm h-100">
+                    <div class="card h-100">
                         <div class="card-body">
                             <h5 class="card-title">Nombre d’hospitalisations</h5>
                             <p class="card-text">Nombre de personnes actuellement hospitalisée</p>
                         </div>
-                        <h3 class="card-footer bg-warning text-dark mx-2 rounded-pill">{{ dataJapHosp.ncures }}</h3>
+                        <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">{{ dataJapHosp.ncures }}</h3>
                     </div>
                 </div>
  
                 <div class="col">
-                    <div class="card shadow-sm">
+                    <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Nombre total de décès 😥</h5>
                             <p class="card-text">Nombre de personnes décédés depuis le début de la pandémie</p>
                         </div>
-                        <h3 class="card-footer bg-dark text-light mx-2 rounded-pill">{{ dataJapDeath.ndeaths }}</h3>
+                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">{{ dataJapDeath.ndeaths }}</h3>
                     </div>
                 </div>
  
                 <div class="col">
-                    <div class="card shadow-sm">
+                    <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Nombre de cas confirmés</h5>
                             <p class="card-text">Nombre de cas confirmés depuis le début de la pandémie</p>
                         </div>
-                        <h3 class="card-footer bg-info text-dark mx-2 rounded-pill">{{ dataJap.npatients }} <span class="fs-6 text-secondary">+ {{ dataJap.adpatients }} en 24h</span></h3>
-                    </div>
-                </div>
- 
-                <div class="col">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Source des données</h5>
-                            <p class="card-text">Source des données :<br><a href="https://corona.go.jp/dashboard/">corona.go.jp</a></p>
-                        </div>
-                        <h3 class="card-footer bg-secondary text-grey mx-2 rounded-pill">{{ dataJap.date }}</h3>
+                        <h3 class="fw-bold card-footer text-info mx-2 rounded-3">{{ dataJap.npatients }} <span class="fs-6 text-secondary">+ {{ dataJap.adpatients }} en 24h</span></h3>
                     </div>
                 </div>
  
@@ -122,12 +129,12 @@
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                 {% for department in departments %}
                     <div class="col">
-                        <div class="card shadow-lg h-100 m-2">
+                        <div class="card h-100 m-2">
                             <div class="card-body">
-                                <h5 class="card-title">{{ department.lib_dep }} {{ department.dep }}</h5>
-                                <p class="card-text">Actuellement hospitalisée <span class="badge bg-warning">{{ department.hosp }}</span></p>
-                                <p class="card-text">Actuellement en réa <span class="badge bg-danger">{{ department.rea }}</span></p>
-                                <a href="{{ path('app_department',{'department': department.lib_dep } ) }}" class="btn btn-secondary" role="button" aria-pressed="true">Plus de chiffres</a>
+                                <h5 class="card-title fw-bold">{{ department.lib_dep }}</h5>
+                                <p class="card-text">Actuellement hospitalisée <span class="badge badge-hos">{{ department.hosp }}</span></p>
+                                <p class="card-text">Actuellement en réa <span class="badge badge-rea">{{ department.rea }}</span></p>
+                                <a href="{{ path('app_department',{'department': department.lib_dep } ) }}" class="btn button text-info" role="button" aria-pressed="true">Plus de chiffres</a>
                             </div>
                         </div>
                     </div>
