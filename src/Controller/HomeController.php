@@ -86,12 +86,12 @@ class HomeController extends AbstractController
                 'borderWidth' => 1,
                 'datasets' => [
                     [
-                        'label' => 'Nouvelles Hospitalisations',
+                        'label' => 'Nouvelles Hospitalisations : ' . $france['departments'][0]['date'],
                         'backgroundColor' => 'rgb(255, 99, 132)',
                         'data' => $hosp_departments1,
                     ],
                     [
-                        'label' => 'Nouvelles entrées en Réa',
+                        'label' => 'Nouvelles entrées en Réa : ' . $france['departments'][0]['date'],
                         'backgroundColor' => 'rgb(46, 41, 78)',
                         'data' => $rea_departments1,
                     ],
@@ -105,12 +105,12 @@ class HomeController extends AbstractController
                 'borderWidth' => 1,
                 'datasets' => [
                     [
-                        'label' => 'Nouvelles Hospitalisations',
+                        'label' => 'Nouvelles Hospitalisations : ' . $france['departments'][0]['date'],
                         'backgroundColor' => 'rgb(255, 99, 132)',
                         'data' => $hosp_departments2,
                     ],
                     [
-                        'label' => 'Nouvelles entrées en Réa',
+                        'label' => 'Nouvelles entrées en Réa : ' . $france['departments'][0]['date'],
                         'backgroundColor' => 'rgb(46, 41, 78)',
                         'data' => $rea_departments2,
                     ],
