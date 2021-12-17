@@ -177,10 +177,19 @@
     {% if departments is not null %}
         <div class="album py-5">
             <div class="container">
-                <h1 class="mb-5">Les chiffres du COVID-19 par département</h1>
+                <h1 class="mb-5 fw-bold">Les chiffres du COVID-19 par département</h1>
                 <div class="card mb-5 mt-5">
-                    <div class="card-body">
-                        {{ render_chart(chart) }}
+                    <h3 class="m-2">Graphique partie 1</h3>
+                    <p class="mb-0">1 - 50 département</p>
+                    <div class="card-body pt-0">
+                        {{ render_chart(chart1) }}
+                    </div>
+                </div>
+                <div class="card mb-5 mt-5">
+                    <h3 class="m-2">Graphique partie 2</h3>
+                    <p class="mb-0">51 - 101 département</p>
+                    <div class="card-body pt-0">
+                        {{ render_chart(chart2) }}
                     </div>
                 </div>
 

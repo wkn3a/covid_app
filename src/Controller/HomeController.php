@@ -55,7 +55,9 @@ class HomeController extends AbstractController
         });
 
         $france_diff = [];
-        $chart = $chartBuilder->createChart(Chart::TYPE_BAR);
+        $chart1 = $chartBuilder->createChart(Chart::TYPE_BAR);
+        $chart2 = $chartBuilder->createChart(Chart::TYPE_BAR);
+
 
         if(!is_null($france['data']) && $france['data_day_before']) {
             $france_diff['death'] = $france['data'][0]['dc_tot'] - $france['data_day_before'][0]['dc_tot'];
@@ -70,27 +72,54 @@ class HomeController extends AbstractController
                 $hosp_departments[] = $chart_departments['incid_hosp'];
                 $rea_departments[] = $chart_departments['incid_rea'];
             }; 
+
+            $label1 = array_slice($label, 0, 50);
+            $hosp_departments1 =array_slice($hosp_departments, 0, 50);
+            $rea_departments1 = array_slice($rea_departments, 0, 50);
+
+            $label2 = array_slice($label,50,101);
+            $hosp_departments2 =array_slice($hosp_departments,50,101);
+            $rea_departments2 = array_slice($rea_departments,50, 101);
             
-            $chart->setData([
-                'labels' => $label,
+            $chart1->setData([
+                'labels' => $label1,
                 'borderWidth' => 1,
                 'datasets' => [
                     [
                         'label' => 'Nouvelles Hospitalisations',
                         'backgroundColor' => 'rgb(255, 99, 132)',
-                        'data' => $hosp_departments,
+                        'data' => $hosp_departments1,
                     ],
                     [
                         'label' => 'Nouvelles entrées en Réa',
                         'backgroundColor' => 'rgb(46, 41, 78)',
-                        'data' => $rea_departments,
+                        'data' => $rea_departments1,
                     ],
                 ],
             ]);
 
-            $chart->setOptions([/* ... */]);
-        }
+            $chart1->setOptions([/* ... */]);
         
+            $chart2->setData([
+                'labels' => $label2,
+                'borderWidth' => 1,
+                'datasets' => [
+                    [
+                        'label' => 'Nouvelles Hospitalisations',
+                        'backgroundColor' => 'rgb(255, 99, 132)',
+                        'data' => $hosp_departments2,
+                    ],
+                    [
+                        'label' => 'Nouvelles entrées en Réa',
+                        'backgroundColor' => 'rgb(46, 41, 78)',
+                        'data' => $rea_departments2,
+                    ],
+                ],
+            ]);
+
+            $chart2->setOptions([/* ... */]);
+        }
+    
         return $this->render('home/index.html.twig', [
             'data' => $france['data'],
             'france_diff' => $france_diff,
@@ -99,7 +128,8 @@ class HomeController extends AbstractController
             'dataJapDeath' => $japan['all_death'],
             'dataJapHosp' => $japan['all_hosp'],
             'message' => $message,
-            'chart' => $chart,
+            'chart1' => $chart1,
+            'chart2' => $chart2,
         ]);
     }
 }
