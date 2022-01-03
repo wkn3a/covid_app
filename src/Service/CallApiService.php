@@ -23,14 +23,26 @@ class CallApiService
         return $this->getApi('live/departements');
     }
 
+    /** 
+     * ne fonction pas bien.
+    */
     public function getDepartmentDataLive($department): ?array
     {
         return $this->getApi('live/departement/' . $department);
+       
     }
 
+    /** 
+     * ne fonction pas bien.
+    */
     public function getDepartmentData($department): ?array
     {
         return $this->getApi('departement/' . $department);
+    }
+
+    public function getDepartmentDataByDate($department, $date): ?array
+    {
+        return $this->getApi('departement/' . $department . "/" . $date);
     }
 
     public function getAllDataByDate($date): ?array

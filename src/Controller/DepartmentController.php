@@ -20,23 +20,39 @@ class DepartmentController extends AbstractController
      */
     public function index(string $department, CallApiService $callApiService, ChartBuilderInterface $chartBuilder, CacheInterface $cache): Response
     {
-        $data_chart = $cache->get('result_department_detail_7j_' . $department, function(ItemInterface $item) use($callApiService, $department){
+        $data_chart =$cache->get('result_department_detail_7j_' . $department, function(ItemInterface $item) use($callApiService, $department){
+                        $item->expiresAt(new \DateTime('tomorrow')); 
             $item->expiresAt(new \DateTime('tomorrow'));
-            $datas = $callApiService->getDepartmentData($department);
-            $datas = array_reverse($datas);
-            $datas = array_slice($datas, 0, 31);
-            return $datas;
+                        $item->expiresAt(new \DateTime('tomorrow')); 
+                        $datas = [];
+                        for ($i=1; $i < 8; $i++) {
+                            $day = date('d-m-Y', strtotime('-'. $i . ' days'));
+                            $datas[] = $callApiService->getDepartmentDataByDate($department, $day);
+                        };
+                        return $datas;
         });
-        
+
+        $datas = [];
+        foreach ($data_chart as $key => $data) {
+            $datas[] = $data[0];
+        };
+
+        $data_dep = $cache->get('result_department_' . $department, function(ItemInterface $item) use($callApiService, $department){
+                $item->expiresAt(new \DateTime('tomorrow'));
+                $day_befor = new \DateTime('yesterday');
+                $data = $callApiService->getDepartmentDataByDate($department, $day_befor->format("d-m-Y"));
+                return $data;
+        });
+
         $label = [];
         $hospitalisation = [];
         $rea = [];
 
-        foreach ($data_chart as $data) {
+        foreach ($datas as $data) {
             $label[] = $data['date'];
             $hospitalisation[] = $data['incid_hosp'];
             $rea[] = $data['incid_rea'];
-        }; 
+            }; 
 
         $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
         $chart->setData([
@@ -54,15 +70,12 @@ class DepartmentController extends AbstractController
                 ],
             ],
         ]);
+        
 
         $chart->setOptions([/* ... */]);
 
-        $data = $cache->get('result_department_france_'. $department, function(ItemInterface $item) use($callApiService, $department){
-            $item->expiresAt(new \DateTime('tomorrow'));
-            return  $callApiService->getDepartmentDataLive($department);
-        }); 
         return $this->render('department/index.html.twig', [
-            'data' => $data,
+            'data_dep' => $data_dep,
             'chart' => $chart,
         ]);
     }
