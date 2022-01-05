@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\CallApiService;
+use App\Service\Functions;
 use DateTime;
 use PhpParser\Node\Stmt\Label;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,11 +19,9 @@ class DepartmentController extends AbstractController
     /**
      * @Route("/department/{department}", name="app_department")
      */
-    public function index(string $department, CallApiService $callApiService, ChartBuilderInterface $chartBuilder, CacheInterface $cache): Response
+    public function index(string $department, CallApiService $callApiService, Functions $functions, CacheInterface $cache): Response
     {
-        $data_chart =$cache->get('result_department_detail_7j_' . $department, function(ItemInterface $item) use($callApiService, $department){
-                        $item->expiresAt(new \DateTime('tomorrow')); 
-            $item->expiresAt(new \DateTime('tomorrow'));
+        $data_chart =$cache->get('result_department_detail_7j' . $department, function(ItemInterface $item) use($callApiService, $department){
                         $item->expiresAt(new \DateTime('tomorrow')); 
                         $datas = [];
                         for ($i=1; $i < 8; $i++) {
@@ -33,16 +32,11 @@ class DepartmentController extends AbstractController
         });
 
         $datas = [];
-        foreach ($data_chart as $key => $data) {
+        foreach ($data_chart as $data) {
             $datas[] = $data[0];
         };
 
-        $data_dep = $cache->get('result_department_' . $department, function(ItemInterface $item) use($callApiService, $department){
-                $item->expiresAt(new \DateTime('tomorrow'));
-                $day_befor = new \DateTime('yesterday');
-                $data = $callApiService->getDepartmentDataByDate($department, $day_befor->format("d-m-Y"));
-                return $data;
-        });
+        $data_dep = current($datas);
 
         $label = [];
         $hospitalisation = [];
@@ -54,26 +48,11 @@ class DepartmentController extends AbstractController
             $rea[] = $data['incid_rea'];
             }; 
 
-        $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
-        $chart->setData([
-            'labels' => array_reverse($label),
-            'datasets' => [
-                [
-                    'label' => 'Nouvelles Hospitalisations',
-                    'borderColor' => 'rgb(255, 99, 132)',
-                    'data' => array_reverse($hospitalisation),
-                ],
-                [
-                    'label' => 'Nouvelles entrées en Réa',
-                    'borderColor' => 'rgb(46, 41, 78)',
-                    'data' => array_reverse($rea),
-                ],
-            ],
-        ]);
-        
-
-        $chart->setOptions([/* ... */]);
-
+        $label = array_reverse($label);
+        $hospitalisation = array_reverse($hospitalisation);
+        $rea = array_reverse($rea);
+        $chart = $functions->chartLine(Chart::TYPE_LINE, $label, $hospitalisation, $rea);
+       
         return $this->render('department/index.html.twig', [
             'data_dep' => $data_dep,
             'chart' => $chart,

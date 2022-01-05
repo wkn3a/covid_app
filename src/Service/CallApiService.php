@@ -3,6 +3,10 @@
 namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use App\Service\Functions;
+use DateTime;
+
+use function PHPUnit\Framework\isJson;
 
 class CallApiService
 {
@@ -18,13 +22,22 @@ class CallApiService
         return $this->getApi('live/France');
     }
 
+    /** 
+     * ne fonction pas bien. 04/01/2022
+    */
     public function getAllDepartmentData(): ?array
     {
         return $this->getApi('live/departements');
     }
 
+    public function getAllDepartmentDataByDate(): ?array
+    {
+        $day = new DateTime('yesterday');
+        return $this->getApi('departements-by-date/'. $day->format("d-m-Y"));
+    }
+
     /** 
-     * ne fonction pas bien.
+     * ne fonction pas bien. 03/01/2022
     */
     public function getDepartmentDataLive($department): ?array
     {
@@ -33,7 +46,7 @@ class CallApiService
     }
 
     /** 
-     * ne fonction pas bien.
+     * ne fonction pas bien. 03/01/2022
     */
     public function getDepartmentData($department): ?array
     {
@@ -62,10 +75,15 @@ class CallApiService
             "https://coronavirusapifr.herokuapp.com/data/" . $var
         );
 
-        if (200 !== $response->getStatusCode()) {
+        $header = $response->getHeaders();
+
+        if (200 !== $response->getStatusCode() ) {
             return null;
-        } else {
+        }
+        if ($header["content-type"][0] == "application/json; charset=utf-8"){
             return $response->toArray();
+        } else {
+            return null;
         }
     }
 

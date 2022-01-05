@@ -1,16 +1,16 @@
 {% extends 'base.html.twig' %}
  
-{% block title %}Les chiffres du COVID-19|{{ data_dep.0.lib_dep }}
+{% block title %}Les chiffres du COVID-19|{{ data_dep.lib_dep }}
 {% endblock %}
  
 {% block body %}
     <div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
         <h1 class="display-4">Les chiffres du COVID-19 -
-            {{ data_dep.0.lib_dep }}</h1>
+            {{ data_dep.lib_dep }}</h1>
         <p class="lead">Source : <a class="text-success" href="https://www.data.gouv.fr/fr/pages/donnees-coronavirus/">data.gouv.fr</a>
             </p>
         <p class="lead">Date d'actualisation :
-            {{ data_dep.0.date }}</p>
+            {{ data_dep.date }}</p>
     </div>
     <div class="card mb-5">
         <div class="card-body">
@@ -25,7 +25,7 @@
                     <h4 class="my-0 fw-normal">Nombre de personnes actuellement hospitalisés</h4>
                 </div>
                 <div class="card-body">
-                    <h1 class="card-title pricing-card-title">{{ data_dep.0.hosp }}<span class="fs-6 text-secondary">+ {{ data_dep.0.incid_hosp }} en 24h</span></h1>
+                    <h1 class="card-title pricing-card-title">{{ data_dep.hosp }}<span class="fs-6 text-secondary">+ {{ data_dep.incid_hosp }} en 24h</span></h1>
                     
                 </div>
             </div>
@@ -36,7 +36,7 @@
                     <h4 class="my-0 fw-normal">Nombre de personnes actuellement réa</h4>
                 </div>
                 <div class="card-body">
-                    <h1 class="card-title pricing-card-title">{{ data_dep.0.rea }}<span class="fs-6 text-secondary">+ {{ data_dep.0.incid_rea }} en 24h</span></h1>
+                    <h1 class="card-title pricing-card-title">{{ data_dep.rea }}<span class="fs-6 text-secondary">+ {{ data_dep.incid_rea }} en 24h</span></h1>
                 </div>
             </div>
         </div>
