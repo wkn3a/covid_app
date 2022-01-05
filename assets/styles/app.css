@@ -1,3 +1,9 @@
+@media screen and (max-width: 750px) {
+    .chart {
+        display: none;
+    }
+  }
+
 body {
     background-color: #e0e0e0;
     font-weight: 300;
