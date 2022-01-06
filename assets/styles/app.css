@@ -39,13 +39,16 @@ a {
                 -5px -5px 10px #ffffff;
 }
 
-.card.button:hover {
+.card.button:hover, .occupation {
     border-radius: 7px;
     background: #e0e0e0;
     box-shadow: inset 5px 5px 4px #a1a1a1,
                 inset -5px -5px 4px #ffffff;
 }
 
+.sm-text {
+    font-size: 0.8rem;
+}
 .badge-hos {
     border-radius: 7px;
     background: #bfe004;

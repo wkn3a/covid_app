@@ -202,10 +202,21 @@
 
                 <div class="accordion" id="accordionExample">
                     {% for region in regions %}
+                    
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="heading{{ region.0.reg }}">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ region.0.reg }}" aria-expanded="{{ region.0.reg == 84 ? 'ture' : 'false' }}" aria-controls="collapse{{ region.0.reg }}">
                                 {{ region.0.lib_reg }}
+                                
+                                {% for departments in region %}
+                                    {% if departments.TO|round(1, 'floor') * 100 >= 100 %}
+                                        😱
+                                    {% elseif departments.TO|round(1, 'floor') * 100 >= 80 %}
+                                        😵
+                                    {% elseif departments.TO|round(1, 'floor') * 100 >= 70 %}
+                                        😰
+                                    {% endif %}
+                                {% endfor %}
                             </button>
                             </h2>
                             <div id="collapse{{ region.0.reg }}" class="accordion-collapse collapse{{ region.0.reg == 84 ? ' show' : '' }}" aria-labelledby="heading{{ region.0.reg }}" data-bs-parent="#accordionExample">
@@ -218,10 +229,31 @@
                                                                         {% elseif departments.TO|round(1, 'floor') * 100 >= 70 %}badge-to-warning
                                                                         {% endif %}">
                                                 <div class="card-body">
+                                                    {% if departments.TO|round(1, 'floor') * 100 >= 100 %}
+                                                        <span class="position-absolute top-0 start-100 translate-middle fs-4">
+                                                            😱
+                                                        </span>
+                                                        {% elseif departments.TO|round(1, 'floor') * 100 >= 70 %}
+                                                        <span class="position-absolute top-0 start-100 translate-middle fs-4">
+                                                            😵
+                                                        </span>
+                                                        {% elseif departments.TO|round(1, 'floor') * 100 >= 70 %}badge-to-warning
+                                                        <span class="position-absolute top-0 start-100 translate-middle fs-4">
+                                                            😰
+                                                        </span>
+                                                    {% endif %}
                                                     <h5 class="card-title fw-bold">{{ departments.lib_dep }}</h5>
-                                                    <p class="card-text">Actuellement hospitalisée <span class="badge badge-hos">{{ departments.hosp }}</span></p>
-                                                    <p class="card-text">Actuellement en réa <span class="badge badge-rea">{{ departments.rea }}</span></p>
-                                                    <p class="card-text ">Taux d'occupation 
+                                                    <p class="card-text">Actuellement hospitalisée 
+                                                        <span class="badge badge-hos">
+                                                            {{ departments.hosp }} <span class="fw-bold sm-text font-monospace"> +{{ departments.incid_hosp }}</span> en 24h
+                                                        </span>
+                                                    </p>
+                                                    <p class="card-text">Actuellement en réa 
+                                                        <span class="badge badge-rea">
+                                                            {{ departments.rea }} <span class="fw-bold sm-text font-monospace"> +{{ departments.incid_rea }}</span> en 24h
+                                                        </span>
+                                                    </p>
+                                                    <p class="card-text occupation mt-4">Taux d'occupation 
                                                     <span class="fw-bold">{{ departments.TO|round(1, 'floor') * 100 }} %</span></p>
                                                 </div>
                                             </div>
@@ -238,6 +270,15 @@
                         <h2 class="accordion-header" id="headingOne">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                            France d'outre-mer
+                           {% for  outremer in outremers %}
+                                {% if outremer.0.TO|round(1, 'floor') * 100 >= 100 %}
+                                    😱
+                                {% elseif outremer.0.TO|round(1, 'floor') * 100 >= 80 %}
+                                    😵
+                                {% elseif outremer.0.TO|round(1, 'floor') * 100 >= 70 %}
+                                    😰
+                                {% endif %}
+                            {% endfor %}
                         </button>
                         </h2>
                         <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
@@ -250,12 +291,33 @@
                                                                         {% elseif outremer.0.TO|round(1, 'floor') * 100 >= 70 %}badge-to-warning
                                                                         {% endif %}">
                                                 <div class="card-body">
+                                                {% if outremer.0.TO|round(1, 'floor') * 100 >= 100 %}
+                                                    <span class="position-absolute top-0 start-100 translate-middle fs-4">
+                                                        😱
+                                                    </span>
+                                                    {% elseif outremer.0.TO|round(1, 'floor') * 100 >= 70 %}
+                                                    <span class="position-absolute top-0 start-100 translate-middle fs-4">
+                                                        😵
+                                                    </span>
+                                                    {% elseif outremer.0.TO|round(1, 'floor') * 100 >= 70 %}badge-to-warning
+                                                    <span class="position-absolute top-0 start-100 translate-middle fs-4">
+                                                        😰
+                                                    </span>
+                                                {% endif %}
                                                     <h5 class="card-title fw-bold">{{ outremer.0.lib_dep }}</h5>
-                                                    <p class="card-text">Actuellement hospitalisée <span class="badge badge-hos">{{ outremer.0.hosp }}</span></p>
-                                                    <p class="card-text">Actuellement en réa <span class="badge badge-rea">{{ outremer.0.rea }}</span></p>
+                                                    <p class="card-text">Actuellement hospitalisée 
+                                                        <span class="badge badge-hos">{{ outremer.0.hosp }}
+                                                        <span class="fw-bold sm-text font-monospace"> +{{ outremer.0.incid_hosp }}</span> en 24h
+                                                        </span> 
+                                                    </p>
+                                                    <p class="card-text">Actuellement en réa 
+                                                        <span class="badge badge-rea">{{ outremer.0.rea }}
+                                                        <span class="fw-bold sm-text font-monospace"> +{{ outremer.0.incid_rea }}</span> en 24h
+                                                        </span>
+                                                    </p>
                                                     
                                                         
-                                                    <p class="card-text">Taux d'occupation <span class="badge badge-rea">{{ outremer.0.TO|round(1, 'floor') * 100 }} %</span></p>
+                                                    <p class="card-text occupation">Taux d'occupation <span class="fw-bold">{{ outremer.0.TO|round(1, 'floor') * 100 }} %</span></p>
                                                 </div>
                                             </div>
                                         </div>
