@@ -4,7 +4,9 @@
 {% endblock %}
  
 {% block body %}
-
+<pre>
+    {{ dump() }}
+</pre>
     <div class="album py-5" id="department">
         <div class="container">
             <h1 class="fw-bold">Les chiffres du COVID-19 en France</h1>
@@ -177,7 +179,93 @@
         </div>
     </div>
 
-    {% if departments is not null %}
+    {% if departments is null %}
+        <div class="py-5">
+            <div class="container">
+                <h1 class="mb-5 fw-bold">Les chiffres du COVID-19 par département</h1>
+                <p class="lead">Date d'actualisation :
+                    {{ regions.0.0.date ?? message }}</p>
+                 <div class="card mb-5 mt-5 chart">
+                    <h3 class="m-2">Graphique partie 1</h3>
+                    <p class="mb-0">1 - 50 département Ain - Maine-et-Loire</p>
+                    <div class="card-body pt-0">
+                        {{ render_chart(chart1) }}
+                    </div>
+                </div>
+                <div class="card mb-5 mt-5 chart">
+                    <h3 class="m-2">Graphique partie 2</h3>
+                    <p class="mb-0">51 - 101 département Manche - Mayotte</p>
+                    <div class="card-body pt-0">
+                        {{ render_chart(chart2) }} 
+                    </div>
+                </div>
+
+                <div class="accordion" id="accordionExample">
+                    {% for region in regions %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{ region.0.reg }}">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ region.0.reg }}" aria-expanded="{{ region.0.reg == 84 ? 'ture' : 'false' }}" aria-controls="collapse{{ region.0.reg }}">
+                                {{ region.0.lib_reg }}
+                            </button>
+                            </h2>
+                            <div id="collapse{{ region.0.reg }}" class="accordion-collapse collapse{{ region.0.reg == 84 ? ' show' : '' }}" aria-labelledby="heading{{ region.0.reg }}" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                                    {% for departments in region %}
+                                        <div class="col">
+                                            <div class="card h-100 m-2 {% if departments.TO|round(1, 'floor') * 100 >= 100 %}badge-to-mort
+                                                                        {% elseif departments.TO|round(1, 'floor') * 100 >= 80 %}badge-to-danger
+                                                                        {% elseif departments.TO|round(1, 'floor') * 100 >= 70 %}badge-to-warning
+                                                                        {% endif %}">
+                                                <div class="card-body">
+                                                    <h5 class="card-title fw-bold">{{ departments.lib_dep }}</h5>
+                                                    <p class="card-text">Actuellement hospitalisée <span class="badge badge-hos">{{ departments.hosp }}</span></p>
+                                                    <p class="card-text">Actuellement en réa <span class="badge badge-rea">{{ departments.rea }}</span></p>
+                                                    <p class="card-text ">Taux d'occupation 
+                                                    <span class="fw-bold">{{ departments.TO|round(1, 'floor') * 100 }} %</span></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                            
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                
+                    {% endfor %}
+                     <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                           France d'outre-mer
+                        </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                                    {% for outremer in outremers %}
+                                        <div class="col">
+                                            <div class="card h-100 m-2 {% if outremer.0.TO|round(1, 'floor') * 100 >= 100 %}badge-to-mort
+                                                                        {% elseif outremer.0.TO|round(1, 'floor') * 100 >= 80 %}badge-to-danger
+                                                                        {% elseif outremer.0.TO|round(1, 'floor') * 100 >= 70 %}badge-to-warning
+                                                                        {% endif %}">
+                                                <div class="card-body">
+                                                    <h5 class="card-title fw-bold">{{ outremer.0.lib_dep }}</h5>
+                                                    <p class="card-text">Actuellement hospitalisée <span class="badge badge-hos">{{ outremer.0.hosp }}</span></p>
+                                                    <p class="card-text">Actuellement en réa <span class="badge badge-rea">{{ outremer.0.rea }}</span></p>
+                                                    
+                                                        
+                                                    <p class="card-text">Taux d'occupation <span class="badge badge-rea">{{ outremer.0.TO|round(1, 'floor') * 100 }} %</span></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+    {% else %}
         <div class="album py-5">
             <div class="container">
                 <h1 class="mb-5 fw-bold">Les chiffres du COVID-19 par département</h1>
@@ -194,7 +282,7 @@
                     <h3 class="m-2">Graphique partie 2</h3>
                     <p class="mb-0">51 - 101 département Manche - Mayotte</p>
                     <div class="card-body pt-0">
-                      {{ render_chart(chart2) }} 
+                        {{ render_chart(chart2) }} 
                     </div>
                 </div>
 

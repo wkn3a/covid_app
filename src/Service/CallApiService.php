@@ -3,10 +3,7 @@
 namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use App\Service\Functions;
 use DateTime;
-
-use function PHPUnit\Framework\isJson;
 
 class CallApiService
 {
@@ -16,14 +13,22 @@ class CallApiService
     {
         $this->client = $client;
     }
-
+    /**
+     * France
+     */
     public function getFrancedata(): ?array
     {
         return $this->getApi('live/France');
     }
 
+    public function getFranceDataByDate($date): ?array
+    {
+        return $this->getApi('france-by-date/' . $date);
+    }
+
     /** 
-     * ne fonction pas bien. 04/01/2022
+     * Depertement
+     * ne fonction pas bien. 04/01/2022, 06/01/2022
     */
     public function getAllDepartmentData(): ?array
     {
@@ -37,7 +42,7 @@ class CallApiService
     }
 
     /** 
-     * ne fonction pas bien. 03/01/2022
+     * ne fonction pas bien. 03/01/2022, 06/01/2022
     */
     public function getDepartmentDataLive($department): ?array
     {
@@ -46,7 +51,7 @@ class CallApiService
     }
 
     /** 
-     * ne fonction pas bien. 03/01/2022
+     * ne fonction pas bien. 03/01/2022, 06/01/2022
     */
     public function getDepartmentData($department): ?array
     {
@@ -63,11 +68,11 @@ class CallApiService
         return $this->getApi('departements-by-date/' . $date);
     }
 
-    public function getFranceDataByDate($date): ?array
+    public function getRegionsByDate($region, $date): ?array
     {
-        return $this->getApi('france-by-date/' . $date);
+        return $this->getApi('region/' . $region . '/' . $date);
     }
-    
+
     private function getApi(string $var): ?array
     {
         $response = $this->client->request(
@@ -86,7 +91,9 @@ class CallApiService
             return null;
         }
     }
-
+    /**
+     * Japon
+     */
     public function getAllJap(): ?array
     {
         return $this->getApiJap('-npatients.json');

@@ -5,7 +5,9 @@ namespace App\Service;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
-class Functions {
+use function PHPSTORM_META\map;
+
+class ChartService {
 
     public $chart;
 
@@ -55,13 +57,13 @@ class Functions {
                     'backgroundColor' => 'rgb(46, 41, 78)',
                     'data' => $data2,
                 ],
+               
             ],
         ]);
 
-        $chart->setOptions([
-                      'indexAxis' => 'y'
-                ]); 
+        $chart->setOptions([/** */]); 
 
         return $chart;
     }
+
 }

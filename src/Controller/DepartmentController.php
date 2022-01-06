@@ -3,23 +3,21 @@
 namespace App\Controller;
 
 use App\Service\CallApiService;
-use App\Service\Functions;
+use App\Service\ChartService;
 use DateTime;
-use PhpParser\Node\Stmt\Label;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\UX\Chartjs\Model\Chart;
-use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 
 class DepartmentController extends AbstractController
 {
     /**
      * @Route("/department/{department}", name="app_department")
      */
-    public function index(string $department, CallApiService $callApiService, Functions $functions, CacheInterface $cache): Response
+    public function index(string $department, CallApiService $callApiService, ChartService $chart, CacheInterface $cache): Response
     {
         $data_chart =$cache->get('result_department_detail_7j' . $department, function(ItemInterface $item) use($callApiService, $department){
                         $item->expiresAt(new \DateTime('tomorrow')); 
@@ -51,7 +49,7 @@ class DepartmentController extends AbstractController
         $label = array_reverse($label);
         $hospitalisation = array_reverse($hospitalisation);
         $rea = array_reverse($rea);
-        $chart = $functions->chartLine(Chart::TYPE_LINE, $label, $hospitalisation, $rea);
+        $chart = $chart->chartLine(Chart::TYPE_LINE, $label, $hospitalisation, $rea);
        
         return $this->render('department/index.html.twig', [
             'data_dep' => $data_dep,
