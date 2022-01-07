@@ -112,9 +112,9 @@ class HomeController extends AbstractController
         if (is_null($this->france['departments'])) {
 
             //grouper les departements pars la region.
-            $regions = self::groupBy($this->france['departmentParDate'], 'reg', false);
-            $regions = array_slice($regions,0,13);
-            $outreMer =array_slice($regions,13,18);
+            $regionsGroupe = self::groupBy($this->france['departmentParDate'], 'reg', false);
+            $regions = array_slice($regionsGroupe,0,13);
+            $outreMer =array_slice($regionsGroupe,13,18); 
 
             $label= [];
             $hosp_departments = [];
@@ -212,7 +212,7 @@ class HomeController extends AbstractController
             'departments' => $this->france['departments'],
             'regions' => $regions ?? null,
             'dateRegion' => $dateRegions ?? null,
-            'outremers' => $OutreMer ?? null,
+            'outremers' => $outreMer ?? null,
             'dataJap' => current($this->japan['all']),
             'dataJapDeath' => current($this->japan['all_death']),
             'dataJapDeath24' => $jaDeathOneDay ?? null,
