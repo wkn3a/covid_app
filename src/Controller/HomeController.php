@@ -115,6 +115,7 @@ class HomeController extends AbstractController
             $regionsGroupe = self::groupBy($this->france['departmentParDate'], 'reg', false);
             $regions = array_slice($regionsGroupe,0,13);
             $outreMer =array_slice($regionsGroupe,13,18); 
+            $dateRegions = $regions[0][0]['date'];
 
             $label= [];
             $hosp_departments = [];
@@ -148,8 +149,7 @@ class HomeController extends AbstractController
             //Grouper les regions
             $regions = array_slice($this->france['region'],0,13);
             $outreMer =array_slice($this->france['region'],13,18);
-
-
+            
             //Contenues pour les datas dans la graphique chart
             $label= [];
             $hosp_departments = [];
@@ -179,7 +179,7 @@ class HomeController extends AbstractController
             $groupByRegion = self::groupBy($regions, 'lib_reg', true);
 
 
-            $dateRegion = $regions[0][0]['date'];
+            $dateRegions = $regions[0][0]['date'];
 
             //Diviser les datas en deux parties.
             $label1 = array_slice($label, 0, 50);

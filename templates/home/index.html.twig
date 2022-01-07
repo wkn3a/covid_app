@@ -124,7 +124,22 @@
                 </p>
             </div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Nombre de cas confirmés 😷</h5>
+                            <p class="card-text">Nombre de cas confirmés depuis le début de la pandémie</p>
+                        </div>
+                        <h3 class="fw-bold card-footer text-info mx-2 rounded-3">
+                        {% if dataJap is not null %}
+                            {{ dataJap.npatients|number_format }}<span class="fs-6 text-secondary">+ {{ dataJap.adpatients }} en 24h</span>
+                        {% else %}
+                            {{ message }}
+                        {% endif %}
+                        </h3>
+                    </div>
+                </div>
+ 
                 <div class="col">
                     <div class="card h-100">
                         <div class="card-body">
@@ -157,22 +172,7 @@
                     </div>
                 </div>
  
-                <div class="col">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Nombre de cas confirmés 😷</h5>
-                            <p class="card-text">Nombre de cas confirmés depuis le début de la pandémie</p>
-                        </div>
-                        <h3 class="fw-bold card-footer text-info mx-2 rounded-3">
-                        {% if dataJap is not null %}
-                            {{ dataJap.npatients|number_format }}<span class="fs-6 text-secondary">+ {{ dataJap.adpatients }} en 24h</span>
-                        {% else %}
-                            {{ message }}
-                        {% endif %}
-                        </h3>
-                    </div>
-                </div>
- 
+                
             </div>
         </div>
     </div>
