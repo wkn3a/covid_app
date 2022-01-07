@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\CallApiService;
 use App\Service\ChartService;
 use DateTime;
+use PhpParser\Node\Stmt\Label;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,9 +15,9 @@ use Symfony\UX\Chartjs\Model\Chart;
 
 class HomeController extends AbstractController
 {
-    public $france = [];
-    public $japan = [];
-    public $regions = [
+    private $france = [];
+    private $japan = [];
+    private $regions = [
                         'Auvergne et Rhône-Alpes', 
                         'Bourgogne et Franche-Comté', 
                         'Bretagne',
@@ -36,13 +37,14 @@ class HomeController extends AbstractController
                         'Réunion',
                         'Mayotte',
                     ];
-    public $message = 'Nous n\'avons pas pu accéder à la source.';
+    private $message = 'Nous n\'avons pas pu accéder à la source.';
+    const DATE = '04-01-2022';
 
     public function __construct(CallApiService $callApiService, CacheInterface $cache)
     {
-        $this->france = $cache->get('result_france', function(ItemInterface $item) use($callApiService){
-
-                            $item->expiresAt(new \DateTime('tomorrow'));
+        $tomorrow = new DateTime('tomorrow');
+        $this->france = $cache->get('result_france', function(ItemInterface $item) use($callApiService ,$tomorrow){
+                            $item->expiresAt($tomorrow);
                             $france['data'] = $callApiService->getFrancedata();
                             $france['departments'] = $callApiService->getAllDepartmentData();
                             $day_befor = new \DateTime('-2 day now');
@@ -51,33 +53,42 @@ class HomeController extends AbstractController
                             return $france;
                         });
         if (is_null($this->france['departments'])) {
-            $this->france['region'] = $cache->get('result_region_france', function(ItemInterface $item) use($callApiService){
-                                        $item->expiresAt(new \DateTime('tomorrow'));
+            $this->france['departmentParDate'] = $cache->get('result_france_all_departements', function(ItemInterface $item) use($callApiService ,$tomorrow){
+                                                    $item->expiresAt($tomorrow);
+                                                    $france = $callApiService->getAllDepartmentDataByDate(self::DATE);
+                                                    return $france;
+                                                });
+        }
+
+        if (is_null($this->france['departments']) && is_null($this->france['departmentParDate'])) {
+            $this->france['region'] = $cache->get('result_region_france', function(ItemInterface $item) use($callApiService, $tomorrow){
+                                        $item->expiresAt($tomorrow);
                                             $france = [];
                                             foreach ($this->regions as $region) {
-                                                $france[] = $callApiService->getRegionsByDate($region, (new DateTime('-2 days now'))->format("d-m-Y"));
+                                                $france[] = $callApiService->getRegionsByDate($region, self::DATE /* (new DateTime('-2 days now'))->format("d-m-Y") */);
                                             }
                                         return $france;
                                     });
         }
-        $this->japan = $cache->get('result_japan', function(ItemInterface $item) use($callApiService){
-                        $item->expiresAt(new \DateTime('tomorrow'));
+        $this->japan = $cache->get('result_japan', function(ItemInterface $item) use($callApiService, $tomorrow){
+                        $item->expiresAt($tomorrow);
                        
                         if(!is_null($callApiService->getAllDeathJap())) {
-                            $japan['all_death'] = current($callApiService->getAllDeathJap());
-                        } else {
                             $japan['all_death'] = $callApiService->getAllDeathJap();
-                        }
-                        if(!is_null($callApiService->getAllJap())) {
-                            $japan['all'] = current($callApiService->getAllJap());
                         } else {
-                            $japan['all'] = $callApiService->getAllDeathJap();
+                            $japan['all_death'] = null;
                         }
 
                         if(!is_null($callApiService->getAllJap())) {
-                            $japan['all_hosp'] = current($callApiService->getAllHospJap());
+                            $japan['all'] = $callApiService->getAllJap();
                         } else {
+                            $japan['all'] = null;
+                        }
+
+                        if(!is_null($callApiService->getAllJap())) {
                             $japan['all_hosp'] = $callApiService->getAllHospJap();
+                        } else {
+                            $japan['all_hosp'] = null;
                         }
                         
                         return $japan;
@@ -86,7 +97,7 @@ class HomeController extends AbstractController
     /**
      * @Route("/", name="home")
      */
-    public function index(CallApiService $callApiService, CacheInterface $cache, ChartService $chart): Response
+    public function index(ChartService $chart): Response
     {
         //Contene pour avoir $france_diff['death'] nombre de personne décedé en 24h.
         $france_diff = [];
@@ -96,78 +107,32 @@ class HomeController extends AbstractController
             $france_diff['death'] = $this->france['data'][0]['dc_tot'] - $this->france['data_day_before'][0]['dc_tot'];
             //Le taux d'occupation.
             $this->france['data'][0]['TO'] = ceil($this->france['data'][0]['TO'] * 100);
-
         }
 
-        if (!is_null($this->france['departments'])) {
-            //changement l'ordre de la liste selon le numéro des departements.
-            $regions  = array_column($this->france['departments'], 'reg');
-            array_multisort($regions, SORT_ASC, $this->france['departments']);
-            
-            $outreMer = array_filter($this->france['departments'], function($element){
-                return $element['reg'] < 7;
-            });
-            $auvergneRhoneAlpes = array_filter($this->france['departments'], function($element){
-                return $element['reg'] == 84;
-            });
-            $iledeFrance = array_filter($this->france['departments'], function($element){
-                return $element['reg'] == 11;
-            });
-            $bourgogneFC = array_filter($this->france['departments'], function($element){
-                return $element['reg'] == 27;
-            });
-            $normandie = array_filter($this->france['departments'], function($element){
-                return $element['reg'] == 28;
-            });
-            $hautsDeFrance = array_filter($this->france['departments'], function($element){
-                return $element['reg'] == 32;
-            });
-            $grandEst = array_filter($this->france['departments'], function($element){
-                return $element['reg'] == 44;
-            });
-            $paysDeLaLoire = array_filter($this->france['departments'], function($element){
-                return $element['reg'] == 52;
-            });
-            $bretagne = array_filter($this->france['departments'], function($element){
-                return $element['reg'] == 53;
-            });
-            $nouvelleAquitaine = array_filter($this->france['departments'], function($element){
-                return $element['reg'] == 75;
-            });
-            $occitanie = array_filter($this->france['departments'], function($element){
-                return $element['reg'] == 76;
-            });
-            $auvergneRhoneAlpes = array_filter($this->france['departments'], function($element){
-                return $element['reg'] == 84;
-            });
-            $provenceAlpesCoteAzur = array_filter($this->france['departments'], function($element){
-                return $element['reg'] == 93;
-            });
-            $corse = array_filter($this->france['departments'], function($element){
-                return $element['reg'] == 94;
-            });
-           /*  $max = 0.9;
-            $dangercount = array_filter($regionsTaux, function($element) use($max){
-                return $element >= $max;
-            }); */
-            //les contenues pour mettre la data dans la graphique chart.
+        if (is_null($this->france['departments'])) {
+
+            //grouper les departements pars la region.
+            $regions = self::groupBy($this->france['departmentParDate'], 'reg', false);
+            $regions = array_slice($regions,0,13);
+            $outreMer =array_slice($regions,13,18);
+
             $label= [];
             $hosp_departments = [];
             $rea_departments = [];
-            $regions = [];
+            $regionsG = [];
             $taux = [];
-
-            foreach ($this->france['departments'] as $chart_departments) {
+            
+            foreach ($this->france['departmentParDate'] as $chart_departments) {
                 $hosp_departments[] = $chart_departments['hosp'];
                 $rea_departments[] = $chart_departments['rea'];
                 $label[] = $chart_departments["lib_dep"];
-                $regions[] = $chart_departments["reg"];
+                $regionsG[] = $chart_departments["reg"];
                 $taux[] = ceil($chart_departments['TO'] * 100);
             }; 
 
-            $label1 = array_slice($label, 0, 5);
-            $hosp_departments1 =array_slice($hosp_departments, 0, 5);
-            $rea_departments1 = array_slice($rea_departments, 0, 5);
+            $label1 = array_slice($label, 0, 50);
+            $hosp_departments1 =array_slice($hosp_departments, 0, 50);
+            $rea_departments1 = array_slice($rea_departments, 0, 50);
 
             $label2 = array_slice($label,50,101);
             $hosp_departments2 =array_slice($hosp_departments,50,101);
@@ -178,24 +143,45 @@ class HomeController extends AbstractController
             
         }
         
-        if (is_null($this->france['departments'])) {
+        if (is_null($this->france['departmentParDate'])) {
+             
+            //Grouper les regions
             $regions = array_slice($this->france['region'],0,13);
-            $OutreMer =array_slice($this->france['region'],13,18);
+            $outreMer =array_slice($this->france['region'],13,18);
 
+
+            //Contenues pour les datas dans la graphique chart
             $label= [];
             $hosp_departments = [];
             $rea_departments = [];
             $taux = [];
 
-            foreach ($this->france['region'] as $chart_departments) {
-                foreach ($chart_departments as $chart_region) {
-                    $hosp_departments[] = $chart_region['hosp'];
-                    $rea_departments[] = $chart_region['rea'];
-                    $label[] = $chart_region["lib_dep"];
-                    $taux[] = ceil($chart_region['TO'] * 100);
+            for ($i=0;$i<count($regions);$i++) {
+                foreach ($regions[$i] as $chart_departments) {
+                    $hosp_departments[] = $chart_departments['hosp'];
+                    $rea_departments[] = $chart_departments['rea'];
+                    $label[] = $chart_departments["lib_dep"];
+                    $taux[] = ceil($chart_departments['TO'] * 100);
                 }
-                
-            }; 
+            }
+            for ($i=0;$i<count($outreMer);$i++) {
+                foreach ($outreMer[$i] as $outreMers) {
+                    $outreMerHosp[] = $outreMers['hosp'];
+                    $outreMerIncidHosp[] = $outreMers['incid_hosp'];
+                    $rea_outreMer[] = $outreMers['rea'];
+                    $reaIncidoutreMer[] = $outreMers['incid_rea'];
+                    $outreMertaux[] = ceil($outreMers['TO'] * 100);
+                    $lib_dep[] = $outreMers["lib_dep"];
+                }
+            }
+            
+
+            $groupByRegion = self::groupBy($regions, 'lib_reg', true);
+
+
+            $dateRegion = $regions[0][0]['date'];
+
+            //Diviser les datas en deux parties.
             $label1 = array_slice($label, 0, 50);
             $hosp_departments1 =array_slice($hosp_departments, 0, 50);
             $rea_departments1 = array_slice($rea_departments, 0, 50);
@@ -203,22 +189,56 @@ class HomeController extends AbstractController
             $label2 = array_slice($label,50,101);
             $hosp_departments2 =array_slice($hosp_departments,50,101);
             $rea_departments2 = array_slice($rea_departments,50, 101);
+
             $chart1 = $chart->chartBar(Chart::TYPE_BAR, $label1, $hosp_departments1, $rea_departments1);
             $chart2 = $chart->chartBar(Chart::TYPE_BAR, $label2, $hosp_departments2, $rea_departments2);
+            
+        }
+
+        //Japon
+        if (!is_null($this->japan['all_death']) && $this->japan['all_hosp'] ) {
+
+            //Calcul pour le numbre de mort en 24h.
+            $jaDeathOneDay = array_slice($this->japan['all_death'], 0,2);
+            $jaDeathOneDay = $jaDeathOneDay[0]['ndeaths'] - $jaDeathOneDay[1]['ndeaths'];
+
+            $jaHospOneDay = array_slice($this->japan['all_hosp'], 0,2);
+            $jaHospOneDay = $jaHospOneDay[0]['ncures'] - $jaHospOneDay[1]['ncures'];
             
         }
         return $this->render('home/index.html.twig', [
             'data' => $this->france['data'],
             'france_diff' => $france_diff,
             'departments' => $this->france['departments'],
-            'regions' => $regions,
-            'outremers' => $OutreMer,
-            'dataJap' => $this->japan['all'],
-            'dataJapDeath' => $this->japan['all_death'],
-            'dataJapHosp' => $this->japan['all_hosp'],
+            'regions' => $regions ?? null,
+            'dateRegion' => $dateRegions ?? null,
+            'outremers' => $OutreMer ?? null,
+            'dataJap' => current($this->japan['all']),
+            'dataJapDeath' => current($this->japan['all_death']),
+            'dataJapDeath24' => $jaDeathOneDay ?? null,
+            'dataJapHosp' => current($this->japan['all_hosp']),
+            'dataJapHosp24' => $jaHospOneDay ?? null,
             'message' => $this->message,
             'chart1' => $chart1 ?? null,
             'chart2' => $chart2 ?? null,
         ]);
+    }
+
+    static public function groupBy(array $list, string $key, bool $double) {
+        $newArray = [];
+
+        if (is_array($list) && $double) {
+            for ($i=0; $i<count($list); $i++) {
+                    foreach ($list[$i] as $val) {
+                    $newArray[$val[$key]][] = $val;
+                }
+            }
+        } else {
+            foreach ($list as $val) {
+                    $newArray[$val[$key]][] = $val;
+            }
+        }
+
+        return $newArray;
     }
 }

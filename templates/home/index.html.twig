@@ -133,7 +133,7 @@
                         </div>
                         <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">
                         {% if dataJapHosp is not null %}
-                            {{ dataJapHosp.ncures|number_format }}
+                            {{ dataJapHosp.ncures|number_format }}<span class="fs-6 text-secondary">+ {{ dataJapHosp24 }} en 24h</span>
                         {% else %}
                             {{ message }}
                         {% endif %}
@@ -149,7 +149,7 @@
                         </div>
                         <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">
                         {% if dataJapDeath is not null %}
-                            {{ dataJapDeath.ndeaths|number_format }}
+                            {{ dataJapDeath.ndeaths|number_format }}<span class="fs-6 text-secondary">+ {{ dataJapDeath24 }} en 24h</span>
                         {% else %}
                             {{ message }}
                         {% endif %}
@@ -176,13 +176,15 @@
             </div>
         </div>
     </div>
-
-    {% if departments is null %}
+<pre>
+    {{ dump() }}
+</pre>
+    {% if departments is null and regions is not null %}
         <div class="py-5">
             <div class="container">
                 <h1 class="mb-5 fw-bold">Les chiffres du COVID-19 par département</h1>
                 <p class="lead">Date d'actualisation :
-                    {{ regions.0.0.date ?? message }}</p>
+                    {{ dateRegion }} (retard sur l'actualisation des données de Santé Publique France)</p>
                  <div class="card mb-5 mt-5 chart">
                     <h3 class="m-2">Graphique partie 1</h3>
                     <p class="mb-0">1 - 50 département Ain - Maine-et-Loire</p>
@@ -251,7 +253,7 @@
                                                             {{ departments.rea }} <span class="fw-bold sm-text font-monospace"> +{{ departments.incid_rea }}</span> en 24h
                                                         </span>
                                                     </p>
-                                                    <p class="card-text occupation mt-4">Taux d'occupation 
+                                                    <p class="card-text mt-4">Taux d'occupation 
                                                     <span class="fw-bold">{{ departments.TO|round(1, 'floor') * 100 }} %</span></p>
                                                 </div>
                                             </div>
@@ -268,7 +270,7 @@
                         <h2 class="accordion-header" id="headingOne">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                            France d'outre-mer
-                           {% for  outremer in outremers %}
+                            {% for  outremer in outremers %}
                                 {% if outremer.0.TO|round(1, 'floor') * 100 >= 100 %}
                                     😱
                                 {% elseif outremer.0.TO|round(1, 'floor') * 100 >= 80 %}
@@ -315,7 +317,7 @@
                                                     </p>
                                                     
                                                         
-                                                    <p class="card-text occupation">Taux d'occupation <span class="fw-bold">{{ outremer.0.TO|round(1, 'floor') * 100 }} %</span></p>
+                                                    <p class="card-text">Taux d'occupation <span class="fw-bold">{{ outremer.0.TO|round(1, 'floor') * 100 }} %</span></p>
                                                 </div>
                                             </div>
                                         </div>

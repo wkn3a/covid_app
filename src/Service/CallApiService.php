@@ -28,35 +28,34 @@ class CallApiService
 
     /** 
      * Depertement
-     * ne fonction pas bien. 04/01/2022, 06/01/2022
+     * ne fonction pas bien. 04/01/2022, 06/01/2022,07/01/2022
     */
     public function getAllDepartmentData(): ?array
     {
         return $this->getApi('live/departements');
     }
 
-    public function getAllDepartmentDataByDate(): ?array
+    public function getAllDepartmentDataByDate($day): ?array
     {
-        $day = new DateTime('yesterday');
-        return $this->getApi('departements-by-date/'. $day->format("d-m-Y"));
+        return $this->getApi('departements-by-date/'. $day);
     }
 
     /** 
-     * ne fonction pas bien. 03/01/2022, 06/01/2022
-    */
+     * ne fonction pas bien. 03/01/2022, 06/01/2022, 07/01/2022
+    
     public function getDepartmentDataLive($department): ?array
     {
         return $this->getApi('live/departement/' . $department);
        
-    }
+    }*/
 
     /** 
-     * ne fonction pas bien. 03/01/2022, 06/01/2022
-    */
+     * ne fonction pas bien. 03/01/2022, 06/01/2022, 07/01/2202
+    
     public function getDepartmentData($department): ?array
     {
         return $this->getApi('departement/' . $department);
-    }
+    }*/
 
     public function getDepartmentDataByDate($department, $date): ?array
     {
@@ -80,11 +79,13 @@ class CallApiService
             "https://coronavirusapifr.herokuapp.com/data/" . $var
         );
 
-        $header = $response->getHeaders();
-
+        
         if (200 !== $response->getStatusCode() ) {
             return null;
         }
+
+        $header = $response->getHeaders();
+
         if ($header["content-type"][0] == "application/json; charset=utf-8"){
             return $response->toArray();
         } else {
