@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Service\CallApiService;
 use App\Service\ChartService;
 use DateTime;
-use PhpParser\Node\Stmt\Label;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -174,10 +173,6 @@ class HomeController extends AbstractController
                     $lib_dep[] = $outreMers["lib_dep"];
                 }
             }
-            
-
-            $groupByRegion = self::groupBy($regions, 'lib_reg', true);
-
 
             $dateRegions = $regions[0][0]['date'];
 
