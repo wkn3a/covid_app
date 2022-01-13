@@ -14,7 +14,9 @@ use Symfony\UX\Chartjs\Model\Chart;
 
 class HomeController extends AbstractController
 {
-    private $france = [];
+    private $allFrance = [];
+    private $allFranceDaybefore = [];
+    private $departemtFrance = [];
     private $japan = [];
     private $regions = [
                         'Auvergne et Rhône-Alpes', 
@@ -37,38 +39,26 @@ class HomeController extends AbstractController
                         'Mayotte',
                     ];
     private $message = 'Nous n\'avons pas pu accéder à la source.';
-    const DATE = '04-01-2022';
+    private const DATE = '04-01-2022';
 
     public function __construct(CallApiService $callApiService, CacheInterface $cache)
     {
+        $this->allFrance = $callApiService->getFrancedata(); 
+        $this->allFranceDaybefore = $callApiService->getFranceDataByDate(date('d-m-Y', strtotime('-2 days')));
+        //Pour avoir la data par les departements. si ça ne marche pas les URL Api, return null.
+        $this->departemtFrance = $callApiService->getAllDepartmentLiveData();
+        if (is_null($this->departemtFrance)) {
+            $this->departemtFrance = $callApiService->getAllDepartmentDataByDate();
+        }
+        if (is_null($this->departemtFrance)) {
+            $this->departemtFrance = [];
+            foreach ($this->regions as $region) {
+                $this->departemtFrance[] = $callApiService->getRegionsByDate($region, date('d-m-Y', strtotime('-2 days')));
+            }
+        }//dd($this->departemtFrance);
+        $this->france['departmentParDate'] = null;
         $tomorrow = new DateTime('tomorrow');
-        $this->france = $cache->get('result_france', function(ItemInterface $item) use($callApiService ,$tomorrow){
-                            $item->expiresAt($tomorrow);
-                            $france['data'] = $callApiService->getFrancedata();
-                            $france['departments'] = $callApiService->getAllDepartmentData();
-                            $day_befor = new \DateTime('-2 day now');
-                            $france['data_day_before'] = $callApiService->getFranceDataByDate($day_befor->format("d-m-Y"));
-                            $france['departmentParDate'] = null;
-                            return $france;
-                        });
-        if (is_null($this->france['departments'])) {
-            $this->france['departmentParDate'] = $cache->get('result_france_all_departements', function(ItemInterface $item) use($callApiService ,$tomorrow){
-                                                    $item->expiresAt($tomorrow);
-                                                    $france = $callApiService->getAllDepartmentDataByDate(self::DATE);
-                                                    return $france;
-                                                });
-        }
-
-        if (is_null($this->france['departments']) && is_null($this->france['departmentParDate'])) {
-            $this->france['region'] = $cache->get('result_region_france', function(ItemInterface $item) use($callApiService, $tomorrow){
-                                        $item->expiresAt($tomorrow);
-                                            $france = [];
-                                            foreach ($this->regions as $region) {
-                                                $france[] = $callApiService->getRegionsByDate($region, self::DATE /* (new DateTime('-2 days now'))->format("d-m-Y") */);
-                                            }
-                                        return $france;
-                                    });
-        }
+        
         $this->japan = $cache->get('result_japan', function(ItemInterface $item) use($callApiService, $tomorrow){
                         $item->expiresAt($tomorrow);
                        
@@ -91,7 +81,7 @@ class HomeController extends AbstractController
                         }
                         
                         return $japan;
-                    });
+                    }); 
     }
     /**
      * @Route("/", name="home")
@@ -100,22 +90,22 @@ class HomeController extends AbstractController
     {
         //Contene pour avoir $france_diff['death'] nombre de personne décedé en 24h.
         $france_diff = [];
-        if(!is_null($this->france['data']) && $this->france['data_day_before']) {
+        if(!is_null($this->allFrance) && $this->allFranceDaybefore) {
 
             //calcule (les décedés de jour - la veille).
-            $france_diff['death'] = $this->france['data'][0]['dc_tot'] - $this->france['data_day_before'][0]['dc_tot'];
+            $france_diff['death'] = $this->allFrance[0]['dc_tot'] - $this->allFranceDaybefore[0]['dc_tot'];
             //Le taux d'occupation.
-            $this->france['data'][0]['TO'] = ceil($this->france['data'][0]['TO'] * 100);
+            $this->allFrance[0]['TO'] = ceil($this->allFrance[0]['TO'] * 100);
         }
 
-        if (!is_null($this->france['departments'])) {
+        if (!is_null($this->departemtFrance)) {
             $label= [];
             $hosp_departments = [];
             $rea_departments = [];
             $regionsG = [];
             $taux = [];
             
-            foreach ($this->france['departments'] as $chart_departments) {
+            foreach ($this->departemtFrance as $chart_departments) {
                 $hosp_departments[] = $chart_departments['hosp'];
                 $rea_departments[] = $chart_departments['rea'];
                 $label[] = $chart_departments["lib_dep"];
@@ -134,7 +124,7 @@ class HomeController extends AbstractController
             $chart2 = $chart->chartBar(Chart::TYPE_BAR, $label2, $hosp_departments2, $rea_departments2, $taux);
         }
 
-        if (is_null($this->france['departments']) && !is_null($this->france['departmentParDate'])) {
+        if (is_null($this->departemtFrance) && !is_null($this->france['departmentParDate'])) {
 
             //grouper les departements pars la region.
             $regionsGroupe = self::groupBy($this->france['departmentParDate'], 'reg', false);
@@ -169,7 +159,7 @@ class HomeController extends AbstractController
             
         }
         
-        if (is_null($this->france['departmentParDate']) && is_null($this->france['departments'])) {
+        if (is_null($this->france['departmentParDate']) && is_null($this->departemtFrance)) {
              
             //Grouper les regions
             $regions = array_slice($this->france['region'],0,13);
@@ -228,12 +218,12 @@ class HomeController extends AbstractController
             
         }
         return $this->render('home/index.html.twig', [
-            'data' => $this->france['data'],
-            'france_diff' => $france_diff,
-            'departments' => $this->france['departments'],
-            'regions' => $regions ?? null,
+            'dataAllFrance' => $this->allFrance,
+            'france_diff' => $france_diff ?? null,
+            'dataDepartments' => $this->departemtFrance,
+            'dataregions' => $regions ?? null,
             'dateRegion' => $dateRegions ?? null,
-            'outremers' => $outreMer ?? null,
+            'dataoutremers' => $outreMer ?? null,
             'dataJap' => current($this->japan['all']),
             'dataJapDeath' => current($this->japan['all_death']),
             'dataJapDeath24' => $jaDeathOneDay ?? null,

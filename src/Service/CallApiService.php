@@ -4,97 +4,114 @@ namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use DateTime;
+use Symfony\Component\Validator\Constraints\Date;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class CallApiService
 {
     private $client;
+    private $cache;
+    private $tomorrow;
 
-    public function __construct(HttpClientInterface $client)
+    public function __construct(HttpClientInterface $client, CacheInterface $cache)
     {
         $this->client = $client;
+        $this->cache = $cache;
+        $this->tommorow = new DateTime('tomorrow');
     }
-    /**
-     * France
-     */
+    //France
     public function getFrancedata(): ?array
     {
-        return $this->getApi('live/France');
+        return $this->getApi('live/France', 'france-live');
     }
 
-    public function getFranceDataByDate($date): ?array
+    public function getFranceDataByDate(string $date): ?array
     {
-        return $this->getApi('france-by-date/' . $date);
+        return $this->getApi('france-by-date/' . $date, 'france-by-date');
     }
 
     /** 
      * Depertement
      * ne fonction pas bien. 04/01/2022, 06/01/2022,07/01/2022
     */
-    public function getAllDepartmentData(): ?array
+    public function getAllDepartmentLiveData(): ?array
     {
-        return $this->getApi('live/departements');
+        return $this->getApi('live/departements', 'departments-live');
     }
 
-    public function getAllDepartmentDataByDate($day): ?array
+    public function getAllDepartmentDataByDate(string $datePreci=null): ?array
     {
-        return $this->getApi('departements-by-date/'. $day);
+        if($datePreci) {
+            return $this->getApi('departements-by-date/'. $datePreci, 'Alldepartements-by-date-Preci');
+        } else {
+        //Par précaution. Derniers 7 jours loop.
+        $i = 1;
+        while($i < 7) {
+            $date = date('d-m-Y', strtotime('-'. $i . ' days')); 
+            $dataDep = $this->getApi('departements-by-date/'. $date, 'Alldepartements-by-date');
+          if ($dataDep) {
+            break;
+          }
+          $i++;
+        }
+            return $dataDep;
+        }
+    }
+
+    public function getDepartmentDataByDate(string $department, string $date): ?array
+    {
+        
+        return $this->getApi('departement/' . $department . "/" . $date, 'department-by-date');
     }
 
     /** 
-     * ne fonction pas bien. 03/01/2022, 06/01/2022, 07/01/2022
+     * ne fonction pas bien. 03/01/2022-
     
     public function getDepartmentDataLive($department): ?array
     {
-        return $this->getApi('live/departement/' . $department);
+        return $this->getApi('live/departement/' . $department, '');
        
     }*/
 
     /** 
-     * ne fonction pas bien. 03/01/2022, 06/01/2022, 07/01/2202
+     * ne fonction pas bien. 03/01/2022-
     
     public function getDepartmentData($department): ?array
     {
-        return $this->getApi('departement/' . $department);
+        return $this->getApi('departement/' . $department, '');
     }*/
 
-    public function getDepartmentDataByDate($department, $date): ?array
-    {
-        return $this->getApi('departement/' . $department . "/" . $date);
-    }
-
-    public function getAllDataByDate($date): ?array
-    {
-        return $this->getApi('departements-by-date/' . $date);
-    }
-
+   
     public function getRegionsByDate($region, $date): ?array
     {
-        return $this->getApi('region/' . $region . '/' . $date);
+        return $this->getApi('region/' . $region . '/' . $date, 'regions_'. $region);
     }
 
-    private function getApi(string $var): ?array
+    private function getApi(string $var, string $nomCache): ?array
     {
-        $response = $this->client->request(
-            'GET',
-            "https://coronavirusapifr.herokuapp.com/data/" . $var
-        );
-
-        
-        if (200 !== $response->getStatusCode() ) {
-            return null;
-        }
-
-        $header = $response->getHeaders();
-
-        if ($header["content-type"][0] == "application/json; charset=utf-8"){
-            return $response->toArray();
-        } else {
-            return null;
-        }
+        $response = $this->cache->get('result_' . $nomCache, function(ItemInterface $item) use($var){
+            $item->expiresAt($this->tomorrow);
+            $response = $this->client->request(
+                'GET',
+                "https://coronavirusapifr.herokuapp.com/data/" . $var
+            );
+    
+            if (200 !== $response->getStatusCode() ) {
+                return null;
+            }
+    
+            $header = $response->getHeaders();
+    
+            if ($header["content-type"][0] == "application/json; charset=utf-8"){
+                return $response->toArray();
+            } else {
+                return null;
+            }
+        });
+        return $response;
     }
-    /**
-     * Japon
-     */
+    //Japon
     public function getAllJap(): ?array
     {
         return $this->getApiJap('-npatients.json');

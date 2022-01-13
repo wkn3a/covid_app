@@ -4,7 +4,9 @@
 {% endblock %}
  
 {% block body %}
-
+<pre>
+    {{ dump() }}
+</pre>
     <div class="album py-5" id="department">
         <div class="container">
             <h1 class="fw-bold">Les chiffres du COVID-19 en France</h1>
@@ -12,7 +14,7 @@
                 <p class="lead">Source : <a class="text-success" href="https://www.data.gouv.fr/fr/pages/donnees-coronavirus/">data.gouv.fr</a>
                     </p>
                 <p class="lead">Date d'actualisation :
-                    {{ data.0.date ?? message }}</p>
+                    {{ dataAllFrance.0.date ?? message }}</p>
             </div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
 
@@ -23,8 +25,8 @@
                             <p class="card-text">Nombre de cas confirmés depuis le début de la pandémie</p>
                         </div>
                         <h3 class="fw-bold card-footer text-info mx-2 rounded-3">
-                        {% if data is not null %}
-                            {{ data.0.conf|number_format }}<span class="fs-6 text-secondary">+ {{ data.0.conf_j1 }} en 24h</span>
+                        {% if dataAllFrance is not null %}
+                            {{ dataAllFrance.0.conf|number_format }}<span class="fs-6 text-secondary">+ {{ dataAllFrance.0.conf_j1 }} en 24h</span>
                         {% else %}
                             {{ message }}
                         {% endif %}
@@ -39,8 +41,8 @@
                             <p class="card-text">Nombre de personnes actuellement hospitalisée</p>
                         </div>
                         <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">
-                        {% if data is not null %}
-                            {{ data.0.hosp|number_format }}<span class="fs-6 text-secondary">+ {{ data.0.incid_hosp }} en 24h</span>
+                        {% if dataAllFrance is not null %}
+                            {{ dataAllFrance.0.hosp|number_format }}<span class="fs-6 text-secondary">+ {{ dataAllFrance.0.incid_hosp }} en 24h</span>
                         {% else %}
                             {{ message }}
                         {% endif %}
@@ -55,8 +57,8 @@
                             <p class="card-text">Nombre de personnes actuellement en réanimation</p>
                         </div>
                         <h3 class="fw-bold card-footer text-danger mx-2 rounded-3">
-                        {% if data is not null %}
-                            {{ data.0.rea|number_format }}<span class="fs-6 text-secondary">+ {{ data.0.incid_rea }} en 24h</span>
+                        {% if dataAllFrance is not null %}
+                            {{ dataAllFrance.0.rea|number_format }}<span class="fs-6 text-secondary">+ {{ dataAllFrance.0.incid_rea }} en 24h</span>
                         {% else %}
                             {{ message }}
                         {% endif %}
@@ -71,8 +73,8 @@
                             <p class="card-text">Nombre de personnes décédés depuis le début de la pandémie</p>
                         </div>
                         <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">
-                        {% if data is not null %}
-                            {{ data.0.dc_tot|number_format }} 
+                        {% if dataAllFrance is not null %}
+                            {{ dataAllFrance.0.dc_tot|number_format }} 
                             {% if france_diff is not empty  %}
                             <span class="fs-6 text-secondary">+ {{ france_diff.death }} en 24h</span>
                             {% endif %} 
@@ -95,8 +97,8 @@
                             <p class="card-text">Tension hospitalière sur la capacité en réanimation</p>
                         </div>
                         <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">
-                        {% if data is not null %}
-                            {{ data.0.TO }} %
+                        {% if dataAllFrance is not null %}
+                            {{ dataAllFrance.0.TO }} %
                         {% else %}
                             {{ message }}
                         {% endif %}
@@ -177,7 +179,7 @@
         </div>
     </div>
 
-    {% if departments is null and regions is not null %}
+    {% if dataDepartments is null and regions is not null %}
         <div class="py-5">
             <div class="container">
                 <h1 class="mb-5 fw-bold">Les chiffres du COVID-19 par département</h1>
@@ -347,7 +349,7 @@
                 </div>
 
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                    {% for department in departments %}
+                    {% for department in dataDepartments %}
                         <div class="col">
                             <div class="card h-100 m-2">
                                 <div class="card-body">
