@@ -48,7 +48,7 @@ class HomeController extends AbstractController
                             $france['departments'] = $callApiService->getAllDepartmentData();
                             $day_befor = new \DateTime('-2 day now');
                             $france['data_day_before'] = $callApiService->getFranceDataByDate($day_befor->format("d-m-Y"));
-                            
+                            $france['departmentParDate'] = null;
                             return $france;
                         });
         if (is_null($this->france['departments'])) {
@@ -108,7 +108,33 @@ class HomeController extends AbstractController
             $this->france['data'][0]['TO'] = ceil($this->france['data'][0]['TO'] * 100);
         }
 
-        if (is_null($this->france['departments'])) {
+        if (!is_null($this->france['departments'])) {
+            $label= [];
+            $hosp_departments = [];
+            $rea_departments = [];
+            $regionsG = [];
+            $taux = [];
+            
+            foreach ($this->france['departments'] as $chart_departments) {
+                $hosp_departments[] = $chart_departments['hosp'];
+                $rea_departments[] = $chart_departments['rea'];
+                $label[] = $chart_departments["lib_dep"];
+                $regionsG[] = $chart_departments["reg"];
+                $taux[] = ceil($chart_departments['TO'] * 100);
+            }; 
+
+            $label1 = array_slice($label, 0, 50);
+            $hosp_departments1 =array_slice($hosp_departments, 0, 50);
+            $rea_departments1 = array_slice($rea_departments, 0, 50);
+
+            $label2 = array_slice($label,50,101);
+            $hosp_departments2 =array_slice($hosp_departments,50,101);
+            $rea_departments2 = array_slice($rea_departments,50, 101);
+            $chart1 = $chart->chartBar(Chart::TYPE_BAR, $label1, $hosp_departments1, $rea_departments1, $taux);
+            $chart2 = $chart->chartBar(Chart::TYPE_BAR, $label2, $hosp_departments2, $rea_departments2, $taux);
+        }
+
+        if (is_null($this->france['departments']) && !is_null($this->france['departmentParDate'])) {
 
             //grouper les departements pars la region.
             $regionsGroupe = self::groupBy($this->france['departmentParDate'], 'reg', false);
@@ -143,7 +169,7 @@ class HomeController extends AbstractController
             
         }
         
-        if (is_null($this->france['departmentParDate'])) {
+        if (is_null($this->france['departmentParDate']) && is_null($this->france['departments'])) {
              
             //Grouper les regions
             $regions = array_slice($this->france['region'],0,13);
