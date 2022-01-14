@@ -47,7 +47,7 @@ class HomeController extends AbstractController
         $this->tempExpire = new DateTime('tomorrow');
         $this->hier = date('d-m-Y', strtotime('-1 days'));
         $this->allFrance = $callApiService->getFrancedata($this->tempExpire); 
-        $this->allFranceDaybefore = $callApiService->getFranceDataByDate($this->hier, $this->tempExpire);
+        $this->allFranceDaybefore = $callApiService->getFranceDataByDate(date('d-m-Y', strtotime('-2 days')), $this->tempExpire);
         //Pour avoir la data par les departements. si ça ne marche pas les URL Api, return null.
         $this->departemtFrance = $callApiService->getAllDepartmentLiveData($this->tempExpire);
         if (is_null($this->departemtFrance)) {
@@ -77,7 +77,6 @@ class HomeController extends AbstractController
     {
         //Contene pour avoir $france_diff['death'] nombre de personne décedé en 24h.
         if(!is_null($this->allFrance) && !is_null($this->allFranceDaybefore)) {
-
             //calcule (les décedés de jour - la veille).
             $france_diff = $this->allFrance[0]['dc_tot'] - $this->allFranceDaybefore[0]['dc_tot'];
             //Le taux d'occupation.
@@ -136,7 +135,7 @@ class HomeController extends AbstractController
         ]);
     }
 
-    static public function groupBy(array $list, string $key, bool $double) {
+    public static function groupBy(array $list, string $key, bool $double) {
         $newArray = [];
 
         if (is_array($list) && $double) {
