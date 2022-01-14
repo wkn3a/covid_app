@@ -4,110 +4,91 @@
 {% endblock %}
  
 {% block body %}
-<pre>
-    {{ dump() }}
-</pre>
+
     <div class="album py-5" id="department">
         <div class="container">
             <h1 class="fw-bold">Les chiffres du COVID-19 en France</h1>
-            <div class="pt-md-2 pb-md-4 mx-auto text-center">
-                <p class="lead">Source : <a class="text-success" href="https://www.data.gouv.fr/fr/pages/donnees-coronavirus/">data.gouv.fr</a>
-                    </p>
-                <p class="lead">Date d'actualisation :
-                    {{ dataAllFrance.0.date ?? message }}</p>
-            </div>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            {% if dataAllFrance is not null %}
+                <div class="pt-md-2 pb-md-4 mx-auto text-center">
+                    <p class="lead">Source : <a class="text-success" href="https://www.data.gouv.fr/fr/pages/donnees-coronavirus/">data.gouv.fr</a>
+                        </p>
+                    <p class="lead">Date d'actualisation :
+                        {{ dataAllFrance.0.date|date("d-m-Y") }}</p>
+                </div>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
 
-                <div class="col">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Nombre de cas confirmés 😷</h5>
-                            <p class="card-text">Nombre de cas confirmés depuis le début de la pandémie</p>
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Nombre de cas confirmés 😷</h5>
+                                <p class="card-text">Nombre de cas confirmés depuis le début de la pandémie</p>
+                            </div>
+                            <h3 class="fw-bold card-footer text-info mx-2 rounded-3">
+                                {{ dataAllFrance.0.conf|number_format }}<span class="fs-6 text-secondary">+ {{ dataAllFrance.0.conf_j1 }} en 24h</span>
+                            </h3>
                         </div>
-                        <h3 class="fw-bold card-footer text-info mx-2 rounded-3">
-                        {% if dataAllFrance is not null %}
-                            {{ dataAllFrance.0.conf|number_format }}<span class="fs-6 text-secondary">+ {{ dataAllFrance.0.conf_j1 }} en 24h</span>
-                        {% else %}
-                            {{ message }}
-                        {% endif %}
-                        </h3>
                     </div>
-                </div>
- 
-                <div class="col">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">Nombre d’hospitalisations 😵</h5>
-                            <p class="card-text">Nombre de personnes actuellement hospitalisée</p>
+    
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Nombre d’hospitalisations 😵</h5>
+                                <p class="card-text">Nombre de personnes actuellement hospitalisée</p>
+                            </div>
+                            <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">
+                                {{ dataAllFrance.0.hosp|number_format }}<span class="fs-6 text-secondary">+ {{ dataAllFrance.0.incid_hosp }} en 24h</span>
+                            
+                            </h3>
                         </div>
-                        <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">
-                        {% if dataAllFrance is not null %}
-                            {{ dataAllFrance.0.hosp|number_format }}<span class="fs-6 text-secondary">+ {{ dataAllFrance.0.incid_hosp }} en 24h</span>
-                        {% else %}
-                            {{ message }}
-                        {% endif %}
-                        </h3>
                     </div>
-                </div>
- 
-                <div class="col">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Nombre de Réa 😖</h5>
-                            <p class="card-text">Nombre de personnes actuellement en réanimation</p>
+    
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Nombre de Réa 😖</h5>
+                                <p class="card-text">Nombre de personnes actuellement en réanimation</p>
+                            </div>
+                            <h3 class="fw-bold card-footer text-danger mx-2 rounded-3">
+                                {{ dataAllFrance.0.rea|number_format }}<span class="fs-6 text-secondary">+ {{ dataAllFrance.0.incid_rea }} en 24h</span>
+                            </h3>
                         </div>
-                        <h3 class="fw-bold card-footer text-danger mx-2 rounded-3">
-                        {% if dataAllFrance is not null %}
-                            {{ dataAllFrance.0.rea|number_format }}<span class="fs-6 text-secondary">+ {{ dataAllFrance.0.incid_rea }} en 24h</span>
-                        {% else %}
-                            {{ message }}
-                        {% endif %}
-                        </h3>
                     </div>
-                </div>
- 
-                <div class="col">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Nombre total de décès 😿</h5>
-                            <p class="card-text">Nombre de personnes décédés depuis le début de la pandémie</p>
+    
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Nombre total de décès 😿</h5>
+                                <p class="card-text">Nombre de personnes décédés depuis le début de la pandémie</p>
+                            </div>
+                            <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">
+                                {{ dataAllFrance.0.dc_tot|number_format }} 
+                                {% if france_diff is not empty  %}
+                                <span class="fs-6 text-secondary">+ {{ france_diff }} en 24h</span>
+                                {% endif %} 
+                            </h3>
                         </div>
-                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">
-                        {% if dataAllFrance is not null %}
-                            {{ dataAllFrance.0.dc_tot|number_format }} 
-                            {% if france_diff is not empty  %}
-                            <span class="fs-6 text-secondary">+ {{ france_diff.death }} en 24h</span>
-                            {% endif %} 
-                        {% else %}
-                            {{ message }}
-                        {% endif %}
-                        </h3>
                     </div>
-                </div>
 
-                <div class="col">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Taux d'occupation
-                                <svg xmlns="http://www.w3.org/2000/svg" data-bs-toggle="popover" title=" Taux d'occupation : " data-bs-content="tension hospitalière sur la capacité en réanimation (Proportion de patients atteints de COVID-19 actuellement en réanimation, en soins intensifs, ou en unité de surveillance continue rapportée au total des lits en capacité initiale, c’est-à-dire avant d’augmenter les capacités de lits de réanimation dans un hôpital" width="16" height="16" fill="currentColor" class="bi bi-info-circle button" viewBox="0 0 16 16">
-                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-                                </svg>
-                            </h5>
-                            <p class="card-text">Tension hospitalière sur la capacité en réanimation</p>
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Taux d'occupation
+                                    <svg xmlns="http://www.w3.org/2000/svg" data-bs-toggle="popover" title=" Taux d'occupation : " data-bs-content="tension hospitalière sur la capacité en réanimation (Proportion de patients atteints de COVID-19 actuellement en réanimation, en soins intensifs, ou en unité de surveillance continue rapportée au total des lits en capacité initiale, c’est-à-dire avant d’augmenter les capacités de lits de réanimation dans un hôpital" width="16" height="16" fill="currentColor" class="bi bi-info-circle button" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                    </svg>
+                                </h5>
+                                <p class="card-text">Tension hospitalière sur la capacité en réanimation</p>
+                            </div>
+                            <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">
+                                {{ dataAllFrance.0.TO }} %
+                            </h3>
                         </div>
-                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">
-                        {% if dataAllFrance is not null %}
-                            {{ dataAllFrance.0.TO }} %
-                        {% else %}
-                            {{ message }}
-                        {% endif %}
-                        </h3>
                     </div>
                 </div>
- 
-                
-            </div>
+            {% else %}
+                {{ message }}
+            {% endif %}
         </div>
     </div>
 
@@ -119,7 +100,7 @@
                     </p>
                 <p class="lead">Date d'actualisation : 
                     {% if dataJap is not null %}
-                        {{ dataJap.date }}
+                        {{ dataJap.date|date("d-m-Y") }}
                     {% else %}
                         {{ message }}
                     {% endif %}
@@ -179,29 +160,30 @@
         </div>
     </div>
 
-    {% if dataDepartments is null and regions is not null %}
+    {% if dataDepartments is not null %}
         <div class="py-5">
             <div class="container">
                 <h1 class="mb-5 fw-bold">Les chiffres du COVID-19 par département</h1>
-                <p class="lead">Date d'actualisation :
-                    {{ dateRegion }} (retard sur l'actualisation des données de Santé Publique France)</p>
+                <p class="lead">
+                    Date d'actualisation : {{ dataDepartments.0.date|date("d-m-Y") }} {% if dataDepartments.0.date|date("d-m-Y") is not same as hier %}Retard sur l'actualisation des données de Santé Publique France{% endif %} 
+                </p>
                  <div class="card mb-5 mt-5 chart">
                     <h3 class="m-2">Graphique partie 1</h3>
-                    <p class="mb-0">1 - 50 département Ain - Maine-et-Loire</p>
+                    <p class="mb-0">1 - 50 département</p>
                     <div class="card-body pt-0">
                         {{ render_chart(chart1) }}
                     </div>
                 </div>
                 <div class="card mb-5 mt-5 chart">
                     <h3 class="m-2">Graphique partie 2</h3>
-                    <p class="mb-0">51 - 101 département Manche - Mayotte</p>
+                    <p class="mb-0">51 - 101 département</p>
                     <div class="card-body pt-0">
                         {{ render_chart(chart2) }} 
                     </div>
                 </div>
 
                 <div class="accordion" id="accordionExample">
-                    {% for region in regions %}
+                    {% for region in dataRegions %}
                     
                         <div class="accordion-item">
                             <h2 class="accordion-header" id="heading{{ region.0.reg }}">
@@ -221,6 +203,7 @@
                             </h2>
                             <div id="collapse{{ region.0.reg }}" class="accordion-collapse collapse{{ region.0.reg == 84 ? ' show' : '' }}" aria-labelledby="heading{{ region.0.reg }}" data-bs-parent="#accordionExample">
                             <div class="accordion-body">
+                            <p>{{ dataDepartments.0.date|date("d-m-Y") }} {% if dataDepartments.0.date|date("d-m-Y") is not same as hier %}Retard sur l'actualisation des données de Santé Publique France{% endif %} </p>
                                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                                     {% for departments in region %}
                                         <div class="col">
@@ -270,7 +253,7 @@
                         <h2 class="accordion-header" id="headingOne">
                         <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                            France d'outre-mer
-                            {% for  outremer in outremers %}
+                            {% for  outremer in dataOutremers %}
                                 {% if outremer.0.TO|round(1, 'floor') * 100 >= 100 %}
                                     😱
                                 {% elseif outremer.0.TO|round(1, 'floor') * 100 >= 80 %}
@@ -283,8 +266,9 @@
                         </h2>
                         <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                         <div class="accordion-body">
+                        <p>{{ dataDepartments.0.date|date("d-m-Y") }} {% if dataDepartments.0.date|date("d-m-Y") is not same as hier %}Retard sur l'actualisation des données de Santé Publique France{% endif %} </p>
                             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                                    {% for outremer in outremers %}
+                                    {% for outremer in dataOutremers %}
                                         <div class="col">
                                             <div class="card h-100 m-2 {% if outremer.0.TO|round(1, 'floor') * 100 >= 100 %}badge-to-mort
                                                                         {% elseif outremer.0.TO|round(1, 'floor') * 100 >= 80 %}badge-to-danger
@@ -326,41 +310,6 @@
                         </div>
                         </div>
                     </div>
-                </div>
-    {% else %}
-        <div class="album py-5">
-            <div class="container">
-                <h1 class="mb-5 fw-bold">Les chiffres du COVID-19 par département</h1>
-                <p class="lead">Date d'actualisation :
-                    {{ departments.0.date ?? message }}</p>
-                <div class="card mb-5 mt-5 chart">
-                    <h3 class="m-2">Graphique partie 1</h3>
-                    <p class="mb-0">1 - 50 département Ain - Maine-et-Loire</p>
-                    <div class="card-body pt-0">
-                        {{ render_chart(chart1) }}
-                    </div>
-                </div>
-                <div class="card mb-5 mt-5 chart">
-                    <h3 class="m-2">Graphique partie 2</h3>
-                    <p class="mb-0">51 - 101 département Manche - Mayotte</p>
-                    <div class="card-body pt-0">
-                        {{ render_chart(chart2) }} 
-                    </div>
-                </div>
-
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                    {% for department in dataDepartments %}
-                        <div class="col">
-                            <div class="card h-100 m-2">
-                                <div class="card-body">
-                                    <h5 class="card-title fw-bold">{{ department.lib_dep }}</h5>
-                                    <p class="card-text">Actuellement hospitalisée <span class="badge badge-hos">{{ department.hosp }}</span></p>
-                                    <p class="card-text">Actuellement en réa <span class="badge badge-rea">{{ department.rea }}</span></p>
-                                    <a href="{{ path('app_department',{'department': department.lib_dep } ) }}" class="btn button text-info" role="button" aria-pressed="true">Plus de chiffres</a>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
                 </div>
             </div>
         </div>

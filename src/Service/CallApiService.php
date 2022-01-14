@@ -3,8 +3,6 @@
 namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use DateTime;
-use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
@@ -12,44 +10,42 @@ class CallApiService
 {
     private $client;
     private $cache;
-    private $tomorrow;
 
     public function __construct(HttpClientInterface $client, CacheInterface $cache)
     {
         $this->client = $client;
         $this->cache = $cache;
-        $this->tommorow = new DateTime('tomorrow');
     }
     //France
-    public function getFrancedata(): ?array
+    public function getFrancedata($time): ?array
     {
-        return $this->getApi('live/France', 'france-live');
+        return $this->getApi('live/France', 'france-live', $time);
     }
 
-    public function getFranceDataByDate(string $date): ?array
+    public function getFranceDataByDate(string $date, $time): ?array
     {
-        return $this->getApi('france-by-date/' . $date, 'france-by-date');
+        return $this->getApi('france-by-date/' . $date, 'france-by-date'. $date, $time);
     }
 
     /** 
      * Depertement
      * ne fonction pas bien. 04/01/2022, 06/01/2022,07/01/2022
     */
-    public function getAllDepartmentLiveData(): ?array
+    public function getAllDepartmentLiveData($time): ?array
     {
-        return $this->getApi('live/departements', 'departments-live');
+        return $this->getApi('live/departements', 'departments-live',$time);
     }
 
-    public function getAllDepartmentDataByDate(string $datePreci=null): ?array
+    public function getAllDepartmentDataByDate($time, string $datePreci=null): ?array
     {
         if($datePreci) {
-            return $this->getApi('departements-by-date/'. $datePreci, 'Alldepartements-by-date-Preci');
+            return $this->getApi('departements-by-date/'. $datePreci, 'Alldepartements-by-date-Preci'. $datePreci, $time);
         } else {
         //Par précaution. Derniers 7 jours loop.
         $i = 1;
         while($i < 7) {
             $date = date('d-m-Y', strtotime('-'. $i . ' days')); 
-            $dataDep = $this->getApi('departements-by-date/'. $date, 'Alldepartements-by-date');
+            $dataDep = $this->getApi('departements-by-date/'. $date, 'Alldepartements-by-date'. $date, $time);
           if ($dataDep) {
             break;
           }
@@ -59,10 +55,10 @@ class CallApiService
         }
     }
 
-    public function getDepartmentDataByDate(string $department, string $date): ?array
+    public function getDepartmentDataByDate(string $department, string $date, $time): ?array
     {
         
-        return $this->getApi('departement/' . $department . "/" . $date, 'department-by-date');
+        return $this->getApi('departement/' . $department . "/" . $date, 'department-by-date', $time);
     }
 
     /** 
@@ -83,15 +79,15 @@ class CallApiService
     }*/
 
    
-    public function getRegionsByDate($region, $date): ?array
+    public function getRegionsByDate($region, $date, $time): ?array
     {
-        return $this->getApi('region/' . $region . '/' . $date, 'regions_'. $region);
+        return $this->getApi('region/' . $region . '/' . $date, 'regions_'. $region . $date, $time);
     }
 
-    private function getApi(string $var, string $nomCache): ?array
+    private function getApi(string $var, string $nomCache, $time): ?array
     {
-        $response = $this->cache->get('result_' . $nomCache, function(ItemInterface $item) use($var){
-            $item->expiresAt($this->tomorrow);
+        $response = $this->cache->get('result_' . $nomCache, function(ItemInterface $item) use($var, $time){
+            $item->expiresAt($time);
             $response = $this->client->request(
                 'GET',
                 "https://coronavirusapifr.herokuapp.com/data/" . $var
@@ -110,49 +106,5 @@ class CallApiService
             }
         });
         return $response;
-    }
-    //Japon
-    public function getAllJap(): ?array
-    {
-        return $this->getApiJap('-npatients.json');
-    }
-
-    public function getAllDeathJap(): ?array
-    {
-        return $this->getApiJap('-ndeaths.json');
-    }
-
-    public function getAllHospJap(): ?array
-    {
-        return $this->getApiJap('-ncures.json');
-    }
-   
-
-    private function getApiJap($var): ?array
-    {
-        $response = $this->client->request(
-            'GET',
-            "https://data.corona.go.jp/converted-json/covid19japan" . $var 
-        );
-        if (200 !== $response->getStatusCode()) {
-            return null;
-        } else {
-            $data = $response->toArray();
-            arsort($data);
-            return  $data;
-        }
-    }
-
-    public function getApiJapDeath($date): ?array
-    {
-        $response = $this->client->request(
-            'GET',
-            "https://opendata.corona.go.jp/api/Covid19JapanNdeaths?date=" . $date
-        );
-        if (200 !== $response->getStatusCode()) {
-            return null;
-        } else {
-            return $response->toArray();
-        }
     }
 }
