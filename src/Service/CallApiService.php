@@ -57,7 +57,6 @@ class CallApiService
 
     public function getDepartmentDataByDate(string $department, string $date, $time): ?array
     {
-        
         return $this->getApi('departement/' . $department . "/" . $date, 'department-by-date', $time);
     }
 

@@ -48,6 +48,7 @@ class HomeController extends AbstractController
         $this->hier = date('d-m-Y', strtotime('-1 days'));
         $this->allFrance = $callApiService->getFrancedata($this->tempExpire); 
         $this->allFranceDaybefore = $callApiService->getFranceDataByDate(date('d-m-Y', strtotime('-2 days')), $this->tempExpire);
+        
         //Pour avoir la data par les departements. si ça ne marche pas les URL Api, return null.
         $this->departemtFrance = $callApiService->getAllDepartmentLiveData($this->tempExpire);
         if (is_null($this->departemtFrance)) {

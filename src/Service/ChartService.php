@@ -3,9 +3,6 @@
 namespace App\Service;
 
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
-use Symfony\UX\Chartjs\Model\Chart;
-
-use function PHPSTORM_META\map;
 
 class ChartService {
 

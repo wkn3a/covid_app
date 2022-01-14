@@ -24,7 +24,7 @@ class DepartmentController extends AbstractController
                         $datas = [];
                         for ($i=1; $i < 8; $i++) {
                             $day = date('d-m-Y', strtotime('-'. $i . ' days'));
-                            $datas[] = $callApiService->getDepartmentDataByDate($department, $day);
+                            $datas[] = $callApiService->getDepartmentDataByDate($department, $day, new \DateTime('tomorrow'));
                         };
                         return $datas;
         });
