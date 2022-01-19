@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Service\CallApiJapanService;
 use App\Service\CallApiService;
 use App\Service\ChartService;
 use DateTime;
@@ -16,9 +15,6 @@ class HomeController extends AbstractController
     private $allFrance = [];
     private $allFranceDaybefore = [];
     private $departemtFrance = [];
-    private $allJapan = [];
-    private $allDeathJapan = [];
-    private $allHospJapan = [];
     private $regions = [
                         'Auvergne et Rhône-Alpes', 
                         'Bourgogne et Franche-Comté', 
@@ -42,7 +38,9 @@ class HomeController extends AbstractController
     private $message = 'Nous n\'avons pas réussi à accéder à la source.';
     private $tempExpire;
     private $hier;
-    public function __construct(CallApiService $callApiService, CallApiJapanService $callApiJapanService)
+
+   
+    public function __construct(CallApiService $callApiService)
     {
         $this->tempExpire = new DateTime('tomorrow');
         $this->hier = date('d-m-Y', strtotime('-1 days'));
@@ -67,15 +65,14 @@ class HomeController extends AbstractController
             }
         }
 
-        $this->allJapan = $callApiJapanService->getAllJap($this->tempExpire);
-        $this->allDeathJapan = $callApiJapanService->getAllDeathJap($this->tempExpire); 
-        $this->allHospJapan = $callApiJapanService->getAllHospJap($this->tempExpire); //dd($this->allDeathJapan, $this->allJapan, $this->allHospJapan);
     }
-    /**
+
+     /**
      * @Route("/", name="home")
      */
     public function index(ChartService $chart): Response
     {
+        
         //Contene pour avoir $france_diff['death'] nombre de personne décedé en 24h.
         if(!is_null($this->allFrance) && !is_null($this->allFranceDaybefore)) {
             //calcule (les décedés de jour - la veille).
@@ -112,12 +109,7 @@ class HomeController extends AbstractController
             $chart1 = $chart->chartBar(Chart::TYPE_BAR, $label1, $hosp_departments1, $rea_departments1);
             $chart2 = $chart->chartBar(Chart::TYPE_BAR, $label2, $hosp_departments2, $rea_departments2);
         }
-        //Japon
-        if (!is_null($this->allDeathJapan) && $this->allHospJapan) {
-            //Calcul pour le numbre de mort en 24h.
-            $jaDeathOneDay = $this->allDeathJapan[1]['ndeaths'] - $this->allDeathJapan[0]['ndeaths'];
-            $jaHospOneDay = $this->allHospJapan[1]['ncures'] - $this->allHospJapan[0]['ncures'];
-        }
+       
         return $this->render('home/index.html.twig', [
             'hier' => $this->hier,
             'dataAllFrance' => $this->allFrance,
@@ -125,14 +117,10 @@ class HomeController extends AbstractController
             'dataDepartments' => $this->departemtFrance,
             'dataRegions' => $regions ?? null,
             'dataOutremers' => $outreMer ?? null,
-            'dataJap' => $this->allJapan[1] ?? null,
-            'dataJapDeath' => $this->allDeathJapan[1] ?? null,
-            'dataJapDeath24' => $jaDeathOneDay ?? null,
-            'dataJapHosp' => $this->allHospJapan[1] ?? null,
-            'dataJapHosp24' => $jaHospOneDay ?? null,
             'message' => $this->message,
             'chart1' => $chart1 ?? null,
             'chart2' => $chart2 ?? null,
+            'menu_actu' => 'home'
         ]);
     }
 

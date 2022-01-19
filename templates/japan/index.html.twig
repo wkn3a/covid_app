@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Les chiffres du COVID-19 au Japon{% endblock %}
+
+{% block body %}
+    <div class="album py-5" id="japon">
+        <div class="container">
+            <h1 class="fw-bold">Les chiffres du COVID-19 au Japon</h1>
+            <div class="pt-md-2 pb-md-4 mx-auto text-center">
+                <p class="lead">Source : <a class="text-success" href="https://corona.go.jp/dashboard/">corona.go.jp</a>
+                    </p>
+                <p class="lead">Date d'actualisation : 
+                    {% if dataJap is not null %}
+                        {{ dataJap.date|date("d-m-Y") }}
+                    {% else %}
+                        {{ message }}
+                    {% endif %}
+                </p>
+            </div>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Nombre de cas confirmés 😷</h5>
+                            <p class="card-text">Nombre de cas confirmés depuis le début de la pandémie</p>
+                        </div>
+                        <h3 class="fw-bold card-footer text-info mx-2 rounded-3">
+                        {% if dataJap is not null %}
+                            {{ dataJap.npatients|number_format }}<span class="fs-6 text-secondary">+ {{ dataJap.adpatients }} en 24h</span>
+                        {% else %}
+                            {{ message }}
+                        {% endif %}
+                        </h3>
+                    </div>
+                </div>
+ 
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Nombre d’hospitalisations 😵</h5>
+                            <p class="card-text">Nombre de personnes actuellement hospitalisée</p>
+                        </div>
+                        <h3 class="fw-bold card-footer text-warning mx-2 rounded-3">
+                        {% if dataJapHosp is not null %}
+                            {{ dataJapHosp.ncures|number_format }}<span class="fs-6 text-secondary">+ {{ dataJapHosp24 }} en 24h</span>
+                        {% else %}
+                            {{ message }}
+                        {% endif %}
+                        </h3>
+                    </div>
+                </div>
+ 
+                <div class="col">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Nombre total de décès 😿</h5>
+                            <p class="card-text">Nombre de personnes décédés depuis le début de la pandémie</p>
+                        </div>
+                        <h3 class="fw-bold card-footer text-dark mx-2 rounded-3">
+                        {% if dataJapDeath is not null %}
+                            {{ dataJapDeath.ndeaths|number_format }}<span class="fs-6 text-secondary">+ {{ dataJapDeath24 }} en 24h</span>
+                        {% else %}
+                            {{ message }}
+                        {% endif %}
+                        </h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
